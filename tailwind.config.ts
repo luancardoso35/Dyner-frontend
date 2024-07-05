@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+const defaultTheme = require('tailwindcss/defaultTheme')
 
 const config: Config = {
   content: [
@@ -8,11 +9,18 @@ const config: Config = {
   ],
   theme: {
     extend: {
-      backgroundImage: {
-        "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
-        "gradient-conic":
-          "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
+      screens: {
+        'xxs': { 'raw': '(min-height: 660px)' },
+        'xs': { 'raw': '(min-height: 850px)' },
+        's': { 'raw': '(min-height: 1025px)' },
+        ...defaultTheme.screens,
       },
+      fontFamily: {
+        'espana': ['var(--font-espana)'],
+        'josefin-sans': [
+          "Josefin Sans", "sans-serif"
+        ]
+      }
     },
   },
   plugins: [],
