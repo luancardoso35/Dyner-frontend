@@ -93,7 +93,7 @@ export default function Locations() {
             setLoading(true)
             setSearched(true)
             const response = await axios.get('https://api.opencagedata.com/geocode/v1/json', {
-                params: { key: process.env.geocodingAPIKey, q: searchAddress},
+                params: { key: process.env.GEOCODING_API_KEY, q: searchAddress},
             })
             setLocations(response.data.results)
             setLoading(false)
@@ -196,7 +196,7 @@ export default function Locations() {
                         <div className="flex items-center justify-center flex-col">
                             <p className="text-center text-xl lg:text-3xl text-slate-400 mb-4">Escolha um local, ou pesquise outro.</p>
                             <input onChange={(event) => setSearchAddress(event.target.value)} placeholder="Pesquisar.." className="rounded-xl px-3 py-2 lg:p-3 bg-slate-700 text-xl w-[80vw] xl:w-[30vw]" type="text" name="" id="" />
-                            <ul className="flex flex-col gap-3 overflow-y-scroll xxs:max-h-[40svh] lg:max-h-[15svh] mt-5 w-[80vw] xl:w-[40vw]">
+                            <ul className={`${locations.length>7 ? 'overflow-y-scroll' : 'overflow-y-hidden'}flex flex-col gap-3 xxs:max-h-[40svh] lg:max-h-[15svh] mt-5 w-[80vw] xl:w-[40vw]`}>
                             {
                                 locations.map((location: any, key) => {
                                     return (
