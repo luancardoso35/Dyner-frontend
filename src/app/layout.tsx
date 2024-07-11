@@ -37,6 +37,8 @@ export default function RootLayout({
       <head>
         <title>Dyner</title>
         <meta name='description' content='Web application to help people decide where to go.' />
+        <meta name="apple-mobile-web-app-capable" content="yes"/>
+        <meta name="mobile-web-app-capable" content="yes"/>
       </head>
       <body className={` ${josefin_sans.className}`}>{children}</body>
     </html>

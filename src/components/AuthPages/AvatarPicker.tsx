@@ -29,9 +29,9 @@ export default function AvatarPicker({setSeed} : AvatarPickerProps) {
         <>
             <label className="text-white inline-block xxs:text-sm xs:text-base w-full text-center mt-2">Imagem de perfil</label>
             <div className="flex items-center text-base lg:text-4xl text-gray-400 justify-center">
-                <p className="cursor-pointer" onClick={() => setAvatarSeed(avatarSeed.substring(0, avatarSeed.length-1))}>{'<'}</p>
-                <img className="w-16 h-16 lg:w-32 lg:h-32" src={avatar} alt="Avatar picker"/>
-                <p className="cursor-pointer" onClick={generateNewAvatar}>{'>'}</p>
+                <p className="cursor-pointer text-3xl" onClick={() => setAvatarSeed(avatarSeed.substring(0, avatarSeed.length-1))}>{'<'}</p>
+                <img className="w-16 h-16 lg:w-32 lg:h-32 mx-4 md:mx-2" src={avatar} alt="Avatar picker"/>
+                <p className="cursor-pointer text-3xl" onClick={generateNewAvatar}>{'>'}</p>
             </div>
         </>
     )
