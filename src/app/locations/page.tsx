@@ -1,5 +1,4 @@
 'use client'
-import VenueDetails from "@/components/common/Cards/PollDetails";
 import Nav from "@/components/common/nav";
 import { adventurer } from "@dicebear/collection";
 import { createAvatar } from "@dicebear/core";
@@ -115,11 +114,11 @@ export default function Locations() {
                 <p className="text-2xl">Bem vindo de volta, <span className="text-[#fe235a] font-bold">Thompson</span></p>
                 <img  src={avatar} alt="Logo do inicio"/>
             </nav>
-            <section className="lg:w-8/12 lg:px-32 flex-1">
+            <section className="lg:w-8/12 lg:px-32 flex-1 mt-2 lg:mt-0">
                 <div className="flex justify-between items-center">
-                    <div className="flex items-center gap-4">
-                    <h1 className="mt-2 text-xl lg:text-3xl">Locais</h1>
-                    <Image title="Reiniciar busca" onClick={reset} alt="search logo" className="w-4 h-4 lg:w-6 lg:h-6 cursor-pointer invert brightness-0" src={require('../../../public/images/common/reset.png')}/>
+                    <div className="flex items-center gap-2 lg:gap-4">
+                        <h1 className="mt-2 text-xl lg:text-3xl">Locais</h1>
+                        {searched && <button onClick={reset} className="lg:text-base text-xs	 border-2 border-slate-400 rounded-xl p-2 shadow-md shadow-slate-500/25">Nova Pesquisa</button>}
                     </div>
                     {
                         searched && !loading && venues.length > 0
@@ -138,7 +137,7 @@ export default function Locations() {
                         :
                         venues.length > 0
                         ?
-                        <section className="grid grid-cols-2 gap-2 lg:grid-cols-4 lg:gap-4 ">
+                        <section className="grid grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-4 ">
                             {
                                 venues.map((venue: any, key) => {
                                     let address = ''
@@ -202,7 +201,7 @@ export default function Locations() {
                                     return (
                                         <li onClick={() => {setCoordinates(location.geometry); searchVenues(location.geometry.lat, location.geometry.lng)}} key={key} className="flex gap-4 cursor-pointer justify-start items-center border-2 border-slate-400 rounded-md p-2">
                                             <Image alt="pin logo" src={require('../../../public/images/menu/pin.png')} className="w-6 lg:w-8 h-6 lg:h-8"/>
-                                            <p className="" >{location.formatted}</p>
+                                            <p>{location.formatted}</p>
                                         </li>
                                     )
                                 })
