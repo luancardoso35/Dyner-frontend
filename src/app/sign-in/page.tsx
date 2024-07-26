@@ -1,5 +1,5 @@
 'use client'
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -8,6 +8,9 @@ import { useRouter } from 'next/navigation'
 import Input from "@/components/AuthPages/Input";
 import Error from "@/components/AuthPages/Error";
 import Button from "@/components/AuthPages/Button";
+import axios from "axios";
+import { setCookie } from "nookies";
+import { AuthContext } from "@/contexts/AuthContext";
 
 const signInSchema = z.object({
     email: z.string().min(1, {message: 'Preencha todos os campos.'}).email({message: 'Email inválido.'}),
@@ -18,19 +21,38 @@ type SignInSchema = z.infer<typeof signInSchema>
 
 export default function SignInPage() {
     const router = useRouter();
+    const { setUser } = useContext(AuthContext)
     const { register, handleSubmit, formState: {errors} } = useForm<SignInSchema>({
         resolver: zodResolver(signInSchema)
     })
     const [seePassword, setSeePassword] = useState(false)
     const [rememberMe, setRememberMe] = useState(false)
+    const [signInError, setSignInError] = useState(false)
 
     function toggleCheckbox() {
         setRememberMe(!rememberMe)
     }
 
-    function handleSignIn(data: SignInSchema) {
-        console.log(data)
-        router.push('/forgot-password')
+    async function handleSignIn(data: SignInSchema) {
+        try {
+            const response = await axios.post('http://localhost:3030/user/sign-in',  {
+                email: data.email,
+                password: data.password
+            })
+
+
+            if (response.status === 200) {
+                setCookie(undefined, 'dyner_auth_token', response.data.token, {
+                    ...(rememberMe) ? {maxAge: 60*60*24*365} : {maxAge: 60*60*24}
+                })
+                setUser(response.data.user)
+                router.push('/dashboard')
+            }
+        } catch (error: any) {
+            if (error.response?.data?.message === 'Wrong username or password') {
+                setSignInError(true)
+            }
+        }
     }
 
     return (
@@ -43,9 +65,8 @@ export default function SignInPage() {
                 <h1 className='text-gray-200 text-3xl xxs:text-2xl s:text-3xl font-bold mt-28 lg:mt-40'>Olá, bem vindo de volta! &#x1F44B;</h1>
                 <div className="sm:max-w-[70%] md:max-w-[70%] lg:max-w-[100%] xl:max-w-[60%] m-auto">
                     <form className="xs:mt-12 xxs:mt-8 text-left" onSubmit={handleSubmit(handleSignIn)}>
-                        <Input register={register} type="text" label="Email" registerName="email" />
-                        <Input register={register} type="password" label="Senha" registerName="password" setState={() => setSeePassword(!seePassword)} state={seePassword} password={true}/>
-                        
+                        <Input setError={setSignInError} register={register} type="text" label="Email" registerName="email" />
+                        <Input setError={setSignInError} register={register} type="password" label="Senha" registerName="password" setState={() => setSeePassword(!seePassword)} state={seePassword} password={true}/>
                         <section className="flex text-white items-center justify-between xs:px-2 xxs:text-sm">
                             <div className="flex items-center gap-1">
                                 <input checked={rememberMe} onChange={() => toggleCheckbox()} type="checkbox" className="rounded-xl w-4 h-4"/>
@@ -58,6 +79,11 @@ export default function SignInPage() {
                             errors
                             &&
                             <Error>{errors.email?.message ?? errors.password?.message}</Error>
+                        }
+                        {
+                            signInError
+                            &&
+                            <Error>Usuário e/ou senha incorreto(s)</Error>
                         }
                         <Button errors={errors.email?.message || errors.password?.message ? true:false}>Entrar&ensp;&rarr;</Button>
                     </form>

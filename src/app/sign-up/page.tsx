@@ -27,7 +27,6 @@ const signUpSchema = z.object({
 type SignUpSchema = z.infer<typeof signUpSchema>
 
 export default function SignUpPage() {
-    const router = useRouter();
     const [avatarSeed, setAvatarSeed] = useState('')
     const [seePassword, setSeePassword] = useState(false)
     const [seeConfirmPassword, setSeeConfirmPassword] = useState(false)
