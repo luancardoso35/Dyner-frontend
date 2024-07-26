@@ -43,6 +43,8 @@ export default function SignInPage() {
 
             if (response.status === 200) {
                 setCookie(undefined, 'dyner_auth_token', response.data.token, {
+                    httpOnly: true,
+                    secure: true,
                     ...(rememberMe) ? {maxAge: 60*60*24*365} : {maxAge: 60*60*24}
                 })
                 setUser(response.data.user)
