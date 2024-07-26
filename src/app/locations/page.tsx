@@ -5,6 +5,7 @@ import { createAvatar } from "@dicebear/core";
 import axios from "axios";
 import Image from "next/image";
 import Link from "next/link";
+import { parseCookies } from "nookies";
 import { useEffect, useMemo, useState } from "react";
 
 export default function Locations() {
@@ -39,7 +40,9 @@ export default function Locations() {
                             lng,
                             offset: 20*offset,
                             ...(searchQuery !== '' && {query: searchQuery}),
-                        }})
+                        }, headers: {
+                            'Authorization': 'Bearer ' + parseCookies()['dyner_auth_token']
+                        }}, )
             if (response.status === 200) {
                 setVenues(response.data.data.response.venues)
             } else {
@@ -50,6 +53,8 @@ export default function Locations() {
                 lng,
                 offset: 20*offset,
                 ...(searchQuery !== '' && {query: searchQuery}),
+            }, headers: {
+                'Authorization': 'Bearer ' + parseCookies()['dyner_auth_token']
             }})
             if (response.status === 200) {
                 setVenues(response.data.data.response.venues)
@@ -68,6 +73,8 @@ export default function Locations() {
                 lat: coordinates.lat,
                 lng: coordinates.lng,
                 query: searchQuery,
+            }, headers: {
+                'Authorization': 'Bearer ' + parseCookies()['dyner_auth_token']
             }})
             if (response.status === 200) {
                 setVenues(response.data.data.response.groups[0].items)
@@ -78,6 +85,8 @@ export default function Locations() {
                 lat: coordinates.lat,
                 lng: coordinates.lng,
                 query: searchQuery,
+            }, headers: {
+                'Authorization': 'Bearer ' + parseCookies()['dyner_auth_token']
             }})
             if (response.status === 200) {
                 setVenues(response.data.data.response.groups[0].items)

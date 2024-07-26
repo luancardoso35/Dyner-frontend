@@ -9,7 +9,7 @@ import Input from "@/components/AuthPages/Input";
 import Error from "@/components/AuthPages/Error";
 import Button from "@/components/AuthPages/Button";
 import axios from "axios";
-import { setCookie } from "nookies";
+import { parseCookies, setCookie } from "nookies";
 import { AuthContext } from "@/contexts/AuthContext";
 
 const signInSchema = z.object({
