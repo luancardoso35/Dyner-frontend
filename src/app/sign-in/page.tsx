@@ -9,8 +9,8 @@ import Input from "@/components/AuthPages/Input";
 import Error from "@/components/AuthPages/Error";
 import Button from "@/components/AuthPages/Button";
 import axios from "axios";
-import { parseCookies, setCookie } from "nookies";
-import { AuthContext } from "@/contexts/AuthContext";
+import { setCookie } from "nookies";
+import { UserContext } from "@/contexts/AuthContext";
 
 const signInSchema = z.object({
     email: z.string().min(1, {message: 'Preencha todos os campos.'}).email({message: 'Email inválido.'}),
@@ -21,7 +21,7 @@ type SignInSchema = z.infer<typeof signInSchema>
 
 export default function SignInPage() {
     const router = useRouter();
-    const { setUser } = useContext(AuthContext)
+    const { handleChangeUser } = useContext(UserContext)
     const { register, handleSubmit, formState: {errors} } = useForm<SignInSchema>({
         resolver: zodResolver(signInSchema)
     })
@@ -40,14 +40,11 @@ export default function SignInPage() {
                 password: data.password
             })
 
-
             if (response.status === 200) {
+                handleChangeUser(response.data.data)
                 setCookie(undefined, 'dyner_auth_token', response.data.token, {
-                    httpOnly: true,
-                    secure: true,
-                    ...(rememberMe) ? {maxAge: 60*60*24*365} : {maxAge: 60*60*24}
+                    ...(rememberMe) ? {maxAge: 60*60*24*365} : {maxAge: 60*60*24},
                 })
-                setUser(response.data.user)
                 router.push('/dashboard')
             }
         } catch (error: any) {
@@ -87,7 +84,7 @@ export default function SignInPage() {
                             &&
                             <Error>Usuário e/ou senha incorreto(s)</Error>
                         }
-                        <Button errors={errors.email?.message || errors.password?.message ? true:false}>Entrar&ensp;&rarr;</Button>
+                        <Button errors={signInError || errors.email?.message || errors.password?.message ? true:false}>Entrar&ensp;&rarr;</Button>
                     </form>
 
                 </div>

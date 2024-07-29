@@ -3,7 +3,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { createAvatar, schema } from '@dicebear/core';
 import { adventurer  } from '@dicebear/collection';
-import { useMemo, useState } from "react";
+import { useContext, useMemo, useState } from "react";
 import Link from "next/link";
 import HomeIcon from '@mui/icons-material/Home';
 import PlaceIcon from '@mui/icons-material/Place';
@@ -13,6 +13,7 @@ import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { BottomNavigation, Box } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import MuiBottomNavigationAction from "@mui/material/BottomNavigationAction";
+import { UserContext } from "@/contexts/AuthContext";
 
 const BottomNavigationAction = styled(MuiBottomNavigationAction)(`
   color: white;
@@ -31,17 +32,20 @@ type NavigationProps = {
     uri: string
 }
 
+const jose = require("jose");
+
 export default function Navigation({uri} : NavigationProps) {
     const router = useRouter();
     const imageClassName = 'max-w-8 cursor-pointer invert'
     const [value, setValue] = useState(uriToIntValue[uri]);
+    const { user } = useContext(UserContext)
 
     const avatar = useMemo(() => {
         return createAvatar(adventurer, {
           size: 128,
-          seed: 'Gracie'
+          seed: user?.avatarSeed
         }).toDataUri();
-      }, []);
+      }, [user?.avatarSeed]);
 
     return (
             <>
@@ -54,9 +58,9 @@ export default function Navigation({uri} : NavigationProps) {
                     </Link>
                     <section className="hidden lg:flex flex-col items-center justify-center gap-6 text-xl font-bold">
                         <div className="font-bold text-gray-700 rounded-full bg-gray-400 flex items-center justify-center">
-                            <img className="w-32" src={avatar} alt="Logo do inicio"/>
+                            <img className="w-32" src={avatar} alt="User Avatar"/>
                         </div>
-                        <p className="text-white">Luan Cardoso</p>
+                        <p className="text-white">{user?.name}</p>
                     </section>
                     <section className={`${uri === 'dashboard' ? 'lg:text-[#252a34] lg:bg-gray-200 lg:border-b-2 ' : 'text-gray-200'} text-lg font-bold justify-center py-2 md:mt-4 rounded-xl w-full cursor-pointer flex gap-4 items-center`} onClick={() => router.push('/dashboard')}>
                         <Image className={imageClassName} src={uri === 'dashboard' ? require('../../../public/images/menu/home.png') : require('../../../public/images/menu/home-outline.png')} alt="Logo do inicio"/>

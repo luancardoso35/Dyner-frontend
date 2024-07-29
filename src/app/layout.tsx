@@ -1,7 +1,10 @@
-import type { Metadata } from "next";
+'use client'
 import { Josefin_Sans,  } from "next/font/google";
 import "./globals.css";
 import localFont from 'next/font/local'
+import { AuthContextProvider, UserContext } from "@/contexts/AuthContext";
+import { parseCookies } from "nookies";
+import { useContext, useEffect } from "react";
 
 export const josefin_sans = Josefin_Sans({ subsets: ["latin"] });
 
@@ -27,6 +30,8 @@ export const espana = localFont({
   variable: '--font-espana'
 })
 
+const jose = require('jose')
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -40,7 +45,11 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-capable" content="yes"/>
         <meta name="mobile-web-app-capable" content="yes"/>
       </head>
-      <body className={` ${josefin_sans.className}`}>{children}</body>
+      <body className={` ${josefin_sans.className}`}>
+        <AuthContextProvider>
+          {children}
+        </AuthContextProvider>
+      </body>
     </html>
   );
 }

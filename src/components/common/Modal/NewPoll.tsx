@@ -50,7 +50,7 @@ export function NewPoll({open, close, saveFunction}: NewPollProps) {
     const [venues, setVenues] = useState([])
     const [searched, setSearched] = useState(false)
     const [persons, setPersons] = useState<string[]>([]);
-    const [selectedVenues, setSelectedVenues] = useState<string[]>([]);
+    const [selectedVenues, setSelectedVenues] = useState<{id: string, name: string}[]>([]);
 
     function reset() {
         setCoordinates({lat: null, lng: null})
@@ -65,11 +65,16 @@ export function NewPoll({open, close, saveFunction}: NewPollProps) {
         console.log('a')
     }
 
-    function handleVenueChange(venueName: string) {
-        if (selectedVenues.indexOf(venueName) !== -1) {
-            setSelectedVenues(selectedVenues.filter(venue => venue !== venueName))
+    function handleVenueChange(newVenue: { id: string, name: string}) {
+        const selectedVenue = selectedVenues.filter((venue: any) => venue.id === newVenue.id)
+        console.log(selectedVenue)
+        if (selectedVenue.length === 0) {
+            setSelectedVenues([...selectedVenues, newVenue])
+            console.log(selectedVenues)
         } else {
-            setSelectedVenues([...selectedVenues, venueName])
+            const newVenues = selectedVenues.filter((venue: any) => venue.id !== newVenue.id)
+            setSelectedVenues(newVenues)
+            console.log(selectedVenues)
         }
     }
 
@@ -91,7 +96,6 @@ export function NewPoll({open, close, saveFunction}: NewPollProps) {
                 query: searchQuery,
             }})
             if (response.status === 200) {
-                console.log(response.data.data.response.groups[0].items)
                 setVenues(response.data.data.response.groups[0].items)
             } else {
             }
@@ -214,12 +218,12 @@ export function NewPoll({open, close, saveFunction}: NewPollProps) {
                                             venues.filter((venue: any) => venue.type !== 'query').map((venue: any, key) => {
                                                 const { object } = venue;
                                                 let address = '';
-                                                address = address + (venue.object.location.address === undefined ? "" : `${venue.object.location.address}, `)
-                                                address = address + (venue.object.location.city === undefined ? "" : `${venue.object.location.city} - `)
-                                                address = address + (venue.object.location.state === undefined ? "" : `${venue.object.location.state}`)
+                                                address = address + (object.location.address === undefined ? "" : `${object.location.address}, `)
+                                                address = address + (object.location.city === undefined ? "" : `${object.location.city} - `)
+                                                address = address + (object.location.state === undefined ? "" : `${object.location.state}`)
                                                 address = address.replace(/,\s*$/, "");
                                                 return (
-                                                    <li key={key} value={object.name} onClick={() => handleVenueChange(object.name)}  className="flex cursor-pointer gap-4 justify-start items-center border-2 border-slate-400 rounded-md p-2 lg:text-lg" >
+                                                    <li key={key} value={object.name} onClick={() => handleVenueChange({id: object.id, name: object.name})}  className="flex cursor-pointer gap-4 justify-start items-center border-2 border-slate-400 rounded-md p-2 lg:text-lg" >
                                                         <div>
                                                             <div className="flex gap-2">
                                                                 <h1 className="max-w-[70%]">{object.name}</h1>
@@ -227,13 +231,22 @@ export function NewPoll({open, close, saveFunction}: NewPollProps) {
                                                             </div>
                                                             <p className="text-sm lg:text-base text-slate-400">{address}</p>
                                                         </div>
-                                                        <CheckCircleOutlineRoundedIcon sx={{color: selectedVenues.indexOf(object.name) !== -1 && '#5cb85c'}} />
+                                                        <CheckCircleOutlineRoundedIcon sx={{color: selectedVenues.filter((venue: any) => venue.id === object.id).length > 0 && '#5cb85c'}} />
                                                     </li>
                                                 )
                                             })
                                         }
                                     </ul>
-                                    <button className="p-2 rounded bg-[#fe235a] mt-2 font-bold text-[#252a34]" onClick={createPoll}>Salvar</button> 
+                                    {
+                                        selectedVenues.length > 0 &&
+                                        <div className="mt-2 mb-2">
+                                            <span className="font-bold">Selecionados: </span>
+                                            {
+                                                selectedVenues.map((venue: any) => venue.name).join(', ')
+                                            }
+                                        </div>
+                                    }
+                                    <button className="p-2 rounded bg-[#fe235a] mt-2 font-bold text-[#252a34] w-full" onClick={createPoll}>Salvar</button> 
                                 </>
                             }
                         </div>

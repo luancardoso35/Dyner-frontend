@@ -1,18 +1,6 @@
-import { createContext, useState } from "react";
-
-export const AuthContext = createContext({
-    user: null,
-    setUser: () => {}
-} as AuthContextValues)
-
-interface AuthContextValues {
-    user: User | null | undefined,
-    setUser: Function
-}
-
-interface AuthContextProps {
-    children: React.ReactNode
-}
+'use client'
+import { createContext, Dispatch, SetStateAction, useCallback, useContext, useState } from "react";
+import { parseCookies } from "nookies";
 
 interface User {
     id: string,
@@ -21,13 +9,26 @@ interface User {
     password: string,
     avatarSeed: string,
 }
+interface AuthContextValues {
+    user: User | null,
+    handleChangeUser: (user: User) => void,
+    user_jwt: string
+}
 
-export function AuthContextProvider({children} : AuthContextProps) {
-    const [user, setUser] = useState<User | null | undefined>(null)
+const UserContext = createContext<AuthContextValues>({} as AuthContextValues)
+
+function AuthContextProvider({children} : {children: React.ReactNode}) {
+    const [user, setUser] = useState<User | null>(null);
+
+    const handleChangeUser = (user: User) => {
+        setUser(user);
+    }
 
     return (
-        <AuthContext.Provider value={{user, setUser}}>
+        <UserContext.Provider value={{user, handleChangeUser, user_jwt: parseCookies()['dyner_auth_token']}}>
             {children}
-        </AuthContext.Provider>
+        </UserContext.Provider>
     )
 }
+
+export { AuthContextProvider, UserContext }
