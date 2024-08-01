@@ -1,32 +1,41 @@
 'use client'
 import { UserContext } from '@/contexts/AuthContext';
 import Image from 'next/image';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { parseCookies } from 'nookies';
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 
 const jose = require('jose');
 
 export default function LandingPage() {
-  const { handleChangeUser } = useContext(UserContext)
+  const { handleChangeUser, user } = useContext(UserContext)
+  const [userLoaded, setUserLoaded] = useState(false)
   const router = useRouter()
   const token = parseCookies()['dyner_auth_token']
 
-  async function handleUser() {
-    if (!token) {
-      router.push('/sign-in')
-      return;
+  useEffect(() => {
+    if (!userLoaded) {
+      handleUser();
     }
-    
-    try {
-      const { payload } = await jose.jwtVerify(token, new TextEncoder().encode(process.env.SECRET))
-      handleChangeUser(payload.user)
-      router.push('/dashboard')
-    } catch (error) {
-      router.push('/sign-in')
+    setUserLoaded(true);
+
+    async function handleUser() {
+      if (!token) {
+        return;
+      }
+      
+      try {
+        const { payload } = await jose.jwtVerify(token, new TextEncoder().encode(process.env.SECRET))
+                            
+        handleChangeUser(payload.userId)
+      } catch (error) {
+        console.log(error);
+      }
     }
-  }
+
+  },[handleChangeUser, router, token])
+
+  
 
   return (
     <div className='flex overflow-hidden'>
@@ -36,7 +45,7 @@ export default function LandingPage() {
         <h1 className='m-auto text-center text-gray-200 leading-tight s:text-6xl xxs:text-4xl xs:text-5xl sm:mt-4 max-w-96 md:max-w-none lg:max-w-lg xl:max-w-xl'>Comece a decidir de forma prática</h1>
         <p className='text-gray-400 m-auto text-center mt-6 text-sm sm:text-md lg:text-lg'>Com <span className='text-[#ff2e63]'>Dyner</span>, você decide em conjunto o que é melhor para todos.</p>
         <Image className='mb-6 xxs:mb-8 xs:mb-16 sm:mb-10 md:mb-14 lg:mb-10 xl:mb-16 mt-2 xxs:mt-[5vh] xs:mt-10 sm:mt-6 md:mt-10 lg:mt-6 xl:mt-14 text-gray-200 max-w-sm xxs:max-w-[60vw] xs:max-w-[300px] max-h-sm m-auto' src={require("../../public/images/logo.png")} alt='Dyner logo'/>
-          <button onClick={handleUser} className="text-gray-200 before:ease block m-auto bg-[#fe3165] hover:bg-[#fe235a] transition duration-500 border-[#b4b4b4] rounded-lg border-2 text-xl max-w-md md:max-w-xl p-4 w-full">
+          <button onClick={() => router.push(`${user?.name ? '/dashboard' : '/sign-in'}`)} className="text-gray-200 before:ease block m-auto bg-[#fe3165] hover:bg-[#fe235a] transition duration-500 border-[#b4b4b4] rounded-lg border-2 text-xl max-w-md md:max-w-xl p-4 w-full">
             Comece agora&ensp;&rarr;
           </button>
       </div>

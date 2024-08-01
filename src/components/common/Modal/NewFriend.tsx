@@ -30,17 +30,26 @@ export function NewFriend({open, close}: ModalProps) {
     const [error, setError] = useState<boolean>(false)
     const [message, setMessage] = useState<string>('')
     const [checkIcon, setCheckIcon] = useState<boolean>(false);
-    const [selectedFriendUsername, setSelectedFriendUsername] = useState<string>('')
+    const [selectedFriendId, setSelectedFriendId] = useState<string>('')
 
-    function addFriend(friend: any) {
-        setSelectedFriendUsername(friend.username)
+    async function addFriend({id}: {id: string}) {
         setCheckIcon(true)
+
+        const {data} = await axios.post('http://localhost:3030/request/add-friend-request', {
+            receiverId: id,
+            senderId: user?.id
+        })
+
+        if (data.success) {
+            setSelectedFriendId(id)
+            setCheckIcon(true)
+        }
     }
 
-    async function searchFriends() {
+    async function searchUsers() {
         try {
             setLoading(true)
-            const {data} = await axios.get('http://localhost:3030/user/search', { params: {
+            const {data} = await axios.get('http://localhost:3030/user/search-friends', { params: {
                 name: friendUsername,
                 username: user?.name
             }})
@@ -53,7 +62,6 @@ export function NewFriend({open, close}: ModalProps) {
             }
             setLoading(false)
         } catch (error) {
-            console.log(error)
             setError(true)
             setMessage("Ocorreu um erro. Tente novamente.")
         }
@@ -67,7 +75,7 @@ export function NewFriend({open, close}: ModalProps) {
 
     return (
         <BaseModal open={open} close={() => {close(); setCheckIcon(false);}}>
-             <p className="text-xl lg:text-3xl">
+             <p className="text-xl lg:text-2xl">
                 Adicionar amigo
             </p>
 
@@ -75,7 +83,7 @@ export function NewFriend({open, close}: ModalProps) {
                 <p className="text-lg" >Insira o nome ou nome de usuário</p>
                 <div className="w-full flex justify-end items-center relative">
                     <input onChange={(event) => setFriendUsername(event.target.value)} className="rounded p-3 bg-[#252a34] border-gray-500 border-[1px] text-base lg:text-xl w-full mt-1" placeholder="Pesquisar.." type="text" name="" id="" />
-                    <Image onClick={() => searchFriends()} alt="search logo" className="w-4 h-4 cursor-pointer invert brightness-0 absolute mr-4" src={require('../../../../public/images/common/lupa.png')}/>
+                    <Image onClick={() => searchUsers()} alt="search logo" className="w-4 h-4 cursor-pointer invert brightness-0 absolute mr-4" src={require('../../../../public/images/common/lupa.png')}/>
                 </div>
             </div>
 
@@ -99,11 +107,11 @@ export function NewFriend({open, close}: ModalProps) {
                                     <img className="lg:w-auto lg:h-auto w-12 h-12" src={friendAvatar} alt="Logo do avatar"/>
                                     <p className="text-xl lg:text-4xl">{friend.name}</p>
                                     {
-                                        checkIcon && friend.name === selectedFriendUsername
+                                        checkIcon && friend.id === selectedFriendId
                                         ?
                                         <CheckIcon sx={{color: '#5cb85c'}}/>
                                         :
-                                        <AddIcon onClick={() => addFriend(friend)} sx={{bgcolor: '#ff2e63', borderRadius: '16px', color: '#252a34'}} className="cursor-pointer"/>
+                                        <AddIcon onClick={() => addFriend({id: friend.id})} sx={{bgcolor: '#ff2e63', borderRadius: '16px', color: '#252a34'}} className="cursor-pointer"/>
                                     }
                                 </div>
                             </>

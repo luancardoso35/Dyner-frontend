@@ -2,12 +2,9 @@
 import PollDetails from "@/components/common/Cards/PollDetails";
 import { NewPoll } from "@/components/common/Modal/NewPoll";
 import Nav from "@/components/common/nav";
+import WelcomeSection from "@/components/WelcomeSection";
 import { UserContext } from "@/contexts/AuthContext";
-import { adventurer } from "@dicebear/collection";
-import { createAvatar } from "@dicebear/core";
-import Image from "next/image";
-import { useContext, useMemo, useState } from "react";
-const jose = require("jose");
+import { useContext, useState } from "react";
 
 export default function Dashboard() {
     const polls = [
@@ -350,19 +347,8 @@ export default function Dashboard() {
         },
     ]
     const [newPollModalOpen, setNewPollModalOpen] = useState(false)
-    const { user, user_jwt, handleChangeUser } = useContext(UserContext)
-    jose.jwtVerify(user_jwt, new TextEncoder().encode(process.env.SECRET))
-        .then(({payload}: any) => {
-            handleChangeUser(payload.user)
-        })
-    
-    const avatar = useMemo(() => {
-        return createAvatar(adventurer, {
-          size: 48,
-          seed: user?.avatarSeed
-        }).toDataUri();
-        
-    }, [user]);
+    const { user, decodeJwt } = useContext(UserContext)
+    decodeJwt();
 
       const createNewPoll = () => {
         
@@ -374,10 +360,7 @@ export default function Dashboard() {
             user &&
             
         <div className="px-8 md:px-16 lg:flex lg:flex-row-reverse lg:justify-around text-white pt-[6svh] pb-[14svh] h-screen flex flex-col overflow-hidden">
-            <nav className="flex justify-between lg:hidden items-center gap-4">
-                <p className="text-2xl">Bem vindo de volta, <span className="text-[#fe235a] font-bold">{user?.name.split(' ')[0]}</span></p>
-                <Image src={avatar} alt="User avatar" width={48} height={48}/>
-            </nav>
+            <WelcomeSection/>
             <section className="lg:w-8/12 lg:px-10 xl:px-32 flex-1">
                 <section className="flex justify-between items-center">
                     <h1 className="mt-2 text-xl lg:text-3xl">Suas votações recentes</h1>

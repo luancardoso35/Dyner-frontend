@@ -30,8 +30,6 @@ export const espana = localFont({
   variable: '--font-espana'
 })
 
-const jose = require('jose')
-
 export default function RootLayout({
   children,
 }: Readonly<{

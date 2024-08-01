@@ -135,7 +135,7 @@ export function NewPoll({open, close, saveFunction}: NewPollProps) {
 
     return (
         <BaseModal open={open} close={() => {close(); reset();}}>
-            <p className="text-xl lg:text-3xl">
+            <p className="text-xl lg:text-2xl">
                 Nova votação
             </p>
             <FormControl sx={{ mt: 4, width: 300, maxWidth: '100%' }}>

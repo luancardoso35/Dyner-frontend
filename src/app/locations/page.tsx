@@ -1,12 +1,11 @@
 'use client'
 import Nav from "@/components/common/nav";
-import { adventurer } from "@dicebear/collection";
-import { createAvatar } from "@dicebear/core";
+import WelcomeSection from "@/components/WelcomeSection";
 import axios from "axios";
 import Image from "next/image";
 import Link from "next/link";
 import { parseCookies } from "nookies";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function Locations() {
     const [searchQuery, setSearchQuery] = useState('')
@@ -17,13 +16,6 @@ export default function Locations() {
     const [offset, setOffset] = useState(0)
     const [loading, setLoading] = useState(false)
     const [locations, setLocations] = useState([])
-
-    const avatar = useMemo(() => {
-        return createAvatar(adventurer, {
-          size: 48,
-          seed: 'Gracie'
-        }).toDataUri();
-    }, []);
 
     function reset() {
         setLocations([]);
@@ -119,10 +111,7 @@ export default function Locations() {
     
     return (
         <div className="px-8 md:px-16 lg:flex lg:flex-row-reverse lg:justify-around text-white pt-[6svh] pb-[14svh] h-screen flex flex-col overflow-hidden">
-            <nav className="flex justify-between lg:hidden items-center gap-4">
-                <p className="text-2xl">Bem vindo de volta, <span className="text-[#fe235a] font-bold">Thompson</span></p>
-                <img  src={avatar} alt="Logo do inicio"/>
-            </nav>
+            <WelcomeSection/>
             <section className="lg:w-8/12 lg:px-32 flex-1 mt-2 lg:mt-0">
                 <div className="flex justify-between items-center">
                     <div className="flex items-center gap-2 lg:gap-4">

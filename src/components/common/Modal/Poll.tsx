@@ -66,7 +66,7 @@ export default function Poll({ open, close, participants, rounds } : PollProps) 
 
     return (
         <BaseModal open={open} close={close}>
-                    <p className="text-xl lg:text-3xl">
+                    <p className="text-xl lg:text-2xl">
                         Votação
                     </p>
                     <p id="transition-modal-description" className="mt: 2">
