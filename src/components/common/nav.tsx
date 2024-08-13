@@ -77,6 +77,10 @@ export default function Navigation({uri} : NavigationProps) {
                         <Image className={imageClassName} src={uri === 'friends' ? require('../../../public/images/menu/group.png') : require('../../../public/images/menu/group-outline.png')} alt="Amigos"/>
                         <p className="hidden lg:block">Amigos</p>
                     </section>
+                    <section className={`${uri === 'friends' ? 'lg:text-[#252a34] lg:bg-gray-200 lg:border-b-2' : 'text-gray-200'} text-lg font-bold justify-center py-2 md:mt-4 rounded-xl w-full cursor-pointer flex gap-4 items-center`} onClick={() => router.push('/friends')}>
+                        <Image className={imageClassName} src={uri === 'friends' ? require('../../../public/images/menu/group.png') : require('../../../public/images/menu/group-outline.png')} alt="Sair"/>
+                        <p className="hidden lg:block">Sair</p>
+                    </section>
                 </nav>
 
                 <Box className="lg:hidden" sx={{ 

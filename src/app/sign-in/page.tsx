@@ -41,7 +41,7 @@ export default function SignInPage() {
             })
 
             if (response.status === 200) {
-                handleChangeUser(response.data.data)
+                handleChangeUser(response.data.data.id)
                 setCookie(undefined, 'dyner_auth_token', response.data.token, {
                     ...(rememberMe) ? {maxAge: 60*60*24*365} : {maxAge: 60*60*24},
                 })

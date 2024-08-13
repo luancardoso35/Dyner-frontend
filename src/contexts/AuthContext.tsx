@@ -35,7 +35,7 @@ function AuthContextProvider({children} : {children: React.ReactNode}) {
         jose.jwtVerify(user_jwt, new TextEncoder().encode(process.env.SECRET))
         .then(({payload}: any) => {
             handleChangeUser(payload.userId)
-    })
+        })
     }
 
     const handleChangeUser = async(userId: string) => {

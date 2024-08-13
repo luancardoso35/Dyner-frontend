@@ -1,47 +1,20 @@
-import { FormControl, Icon, makeStyles, OutlinedInput, Select, Typography } from "@mui/material";
+import { FormControl, OutlinedInput, Select, Typography } from "@mui/material";
 import { BaseModal, ModalProps } from "./BaseModal";
 import InputLabel from '@mui/material/InputLabel';
 import Box from '@mui/material/Box';
 import Chip from '@mui/material/Chip';
 import MenuItem from '@mui/material/MenuItem';
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { SelectChangeEvent } from '@mui/material/Select';
 import Image from "next/image";
 import axios from "axios";
 import Link from "next/link";
 import CheckCircleOutlineRoundedIcon from '@mui/icons-material/CheckCircleOutlineRounded';
-type Friend = {
-    name: string
-}
+import { UserContext } from "@/contexts/AuthContext";
 
-const friends: Friend[] = [
-    {
-        name: 'luan'
-    },
-    {
-        name: 'luan1'
-    },
-    {
-        name: 'luan2'
-    },
-    {
-        name: 'luam3'
-    },
-    {
-        name: 'luan4'
-    },
-    {
-        name: 'luan5'
-    },
-]
-
-type NewPollProps = {
-    saveFunction: Function
-} & ModalProps
-
-
-export function NewPoll({open, close, saveFunction}: NewPollProps) {
+export function NewPoll({open, close}: ModalProps) {
     const [loading, setLoading] = useState(false)
+    const { user } = useContext(UserContext)
     const [locations, setLocations] = useState([])
     const [searchQuery, setSearchQuery] = useState('')
     const [coordinates, setCoordinates] = useState({lat: null, lng: null})
@@ -50,7 +23,8 @@ export function NewPoll({open, close, saveFunction}: NewPollProps) {
     const [venues, setVenues] = useState([])
     const [searched, setSearched] = useState(false)
     const [persons, setPersons] = useState<string[]>([]);
-    const [selectedVenues, setSelectedVenues] = useState<{id: string, name: string}[]>([]);
+    const [selectedVenues, setSelectedVenues] = useState<{id: string, name: string, address: string}[]>([]);
+    const friends = user?.friends
 
     function reset() {
         setCoordinates({lat: null, lng: null})
@@ -61,20 +35,25 @@ export function NewPoll({open, close, saveFunction}: NewPollProps) {
         setPersons([]);
     }
 
-    function createPoll() {
-        console.log('a')
+    async function createPoll() {
+        try {
+            const response = await axios.post('http://localhost:3030/poll', {
+                participants: [...persons, user?.id],
+                venues: selectedVenues
+            })
+        } catch (error) {
+            console.log(error)
+        }
     }
 
-    function handleVenueChange(newVenue: { id: string, name: string}) {
+    function handleVenueChange(newVenue: { id: string, name: string, address: string }) {
         const selectedVenue = selectedVenues.filter((venue: any) => venue.id === newVenue.id)
         console.log(selectedVenue)
         if (selectedVenue.length === 0) {
             setSelectedVenues([...selectedVenues, newVenue])
-            console.log(selectedVenues)
         } else {
             const newVenues = selectedVenues.filter((venue: any) => venue.id !== newVenue.id)
             setSelectedVenues(newVenues)
-            console.log(selectedVenues)
         }
     }
 
@@ -146,6 +125,7 @@ export function NewPoll({open, close, saveFunction}: NewPollProps) {
                         color: "#fe235a"
                         }
                     }}>Participantes</InputLabel>
+                
                 <Select
                     inputProps={{
                         MenuProps: {
@@ -178,20 +158,25 @@ export function NewPoll({open, close, saveFunction}: NewPollProps) {
                 input={<OutlinedInput id="select-multiple-chip" label="Participantes" className="text-[18px]"/>}
                 renderValue={(selected) => (
                     <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                    {selected.map((value) => (
-                        <Chip sx={{color: 'white'}} key={value} label={value} />
+                    {selected.map((personId) => (
+                        <Chip sx={{color: 'white'}} key={personId} label={friends?.find(friend => friend.id === personId)?.name} />
                     ))}
                     </Box>
                 )}
                 >
-                {friends.map((friend, key) => (
-                    <MenuItem
-                    key={key}
-                    value={friend.name}
-                    >
-                        {friend.name}
-                    </MenuItem>
-                ))}
+                {
+                    friends
+                    &&
+                    friends.map((friend) => {
+                        return (
+                                <MenuItem
+                                    key={friend.id}
+                                    value={friend.id}
+                                >
+                                        {friend.name}
+                                </MenuItem>
+                        )
+                    })}
                 </Select>
             </FormControl>
 
@@ -223,7 +208,7 @@ export function NewPoll({open, close, saveFunction}: NewPollProps) {
                                                 address = address + (object.location.state === undefined ? "" : `${object.location.state}`)
                                                 address = address.replace(/,\s*$/, "");
                                                 return (
-                                                    <li key={key} value={object.name} onClick={() => handleVenueChange({id: object.id, name: object.name})}  className="flex cursor-pointer gap-4 justify-start items-center border-2 border-slate-400 rounded-md p-2 lg:text-lg" >
+                                                    <li key={key} value={object.name} onClick={() => handleVenueChange({id: object.id, name: object.name, address})}  className="flex cursor-pointer gap-4 justify-start items-center border-2 border-slate-400 rounded-md p-2 lg:text-lg" >
                                                         <div>
                                                             <div className="flex gap-2">
                                                                 <h1 className="max-w-[70%]">{object.name}</h1>

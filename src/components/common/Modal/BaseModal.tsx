@@ -2,27 +2,30 @@ import { Box, Fade, Modal } from "@mui/material";
 import Backdrop from '@mui/material/Backdrop';
 import ModalClose from '@mui/joy/ModalClose';
 
-const style = {
-    position: 'absolute' as 'absolute',
-    borderRadius: '16px',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: 400,
-    bgcolor: '#252a34',
-    border: '2px solid rgb(71 85 105)',
-    boxShadow: 24,
-    color:'#fff',
-    p: 4,
-};
-
 export type ModalProps = {
     open: boolean,
-    close: MouseEventHandler<HTMLButtonElement>,
-    children?: React.ReactNode
+    close?: MouseEventHandler<HTMLButtonElement>,
+    children?: React.ReactNode,
+    variant?: 'modal' | 'informative'
 }
 
-export function BaseModal({ open, close, children }: ModalProps) {
+export function BaseModal({ open, close, children, variant }: ModalProps) {
+    const style = {
+        position: 'absolute' as 'absolute',
+        borderRadius: '16px',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        width: variant === 'informative' ? 500 : 400,
+        bgcolor: '#252a34',
+        "font-weight": variant === 'informative' && "bold",
+        "font-size": variant === 'informative' && "22px",
+        border: '2px solid rgb(71 85 105)',
+        boxShadow: 24,
+        color: variant === 'informative' ? 'rgb(148 163 184)' : '#fff',
+        p: variant === 'informative' ? 8 : 4,
+    };
+
     return (
         <Modal
                 aria-labelledby="transition-modal-title"

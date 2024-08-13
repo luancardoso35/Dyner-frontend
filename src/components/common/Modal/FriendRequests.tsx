@@ -79,6 +79,8 @@ export default function FriendRequest ({ open, close, loggedUserId }: FriendRequ
                 Solicitações de amizade                
             </p>
             {
+                friendsRequests.length > 0 
+                ?
                 friendsRequests.map((user, key) => {
                     const avatar = generateAvatar(user.avatarSeed)
                     return (
@@ -92,6 +94,8 @@ export default function FriendRequest ({ open, close, loggedUserId }: FriendRequ
                         </div>
                     )
                 })
+                :
+                <p className="text-center text-xl text-slate-400 mt-8">Não há nenhuma solicitação por enquanto :(</p>
             }
         </BaseModal>
     )
