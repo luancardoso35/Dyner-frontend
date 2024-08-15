@@ -5,6 +5,7 @@ import localFont from 'next/font/local'
 import { AuthContextProvider, UserContext } from "@/contexts/AuthContext";
 import { parseCookies } from "nookies";
 import { useContext, useEffect } from "react";
+import { PollContextProvider } from "@/contexts/PollsContext";
 
 export const josefin_sans = Josefin_Sans({ subsets: ["latin"] });
 
@@ -45,7 +46,9 @@ export default function RootLayout({
       </head>
       <body className={` ${josefin_sans.className}`}>
         <AuthContextProvider>
-          {children}
+          <PollContextProvider>
+            {children}
+          </PollContextProvider>
         </AuthContextProvider>
       </body>
     </html>

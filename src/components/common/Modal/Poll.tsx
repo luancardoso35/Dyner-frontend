@@ -23,6 +23,7 @@ function CustomTabPanel(props: TabPanelProps) {
   
     return (
       <div
+        className="overflow-y-scroll max-h-56 lg:max-h-96"
         role="tabpanel"
         hidden={value !== index}
         id={`simple-tabpanel-${index}`}
@@ -34,7 +35,7 @@ function CustomTabPanel(props: TabPanelProps) {
     );
   }
 
-type PollProps = {users: UserDTO[], pollId: string} & ModalProps
+type PollProps = {users: UserDTO[], pollId: string, refreshWithWinner: () => void} & ModalProps
 
 function a11yProps(index: number) {
     return {
@@ -43,7 +44,7 @@ function a11yProps(index: number) {
     };
   }
 
-export default function Poll({ open, close, users, pollId } : PollProps) {
+export default function Poll({ open, close, users, pollId, refreshWithWinner } : PollProps) {
     const [tab, setTab] = useState(0);
     const [loading, setLoading] = useState(false)
     const [rounds, setRounds] = useState<PollRoundDTO[]>([])
@@ -54,6 +55,8 @@ export default function Poll({ open, close, users, pollId } : PollProps) {
     const { user } = useContext(UserContext)
 
     const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+        setUserVote(null)
+        setSelectedItems([])
         setTab(newValue);
     };
 
@@ -66,6 +69,8 @@ export default function Poll({ open, close, users, pollId } : PollProps) {
 
         if (response.status === 200) {
             setSuccessModalIsOpen(true);
+            setUserVote(response.data.data)
+            refreshWithWinner();
         }
     }
 
@@ -86,15 +91,18 @@ export default function Poll({ open, close, users, pollId } : PollProps) {
             setRounds(responseRounds.data.data)
             const responseVenues = await axios.get(`http://localhost:3030/venue/${responseRounds.data.data.filter((round: any) => round.roundNumber === tab)[0]?.venuesOnPollRound.map((venue:any) => venue.venueId)}`)
             setVenues(responseVenues.data.data)
-            const userVoteInThisRound = await axios.get(`http://localhost:3030/vote/`, { params: {
-                roundId: responseRounds.data.data.filter((round: any) => round.roundNumber === tab)[0].id,
-                userId: user?.id
-            }})
-            setUserVote(userVoteInThisRound.data.data)
-            console.log(userVoteInThisRound.data.data)
+
+            if (!userVote) {
+                const userVoteInThisRound = await axios.get(`http://localhost:3030/vote/`, { params: {
+                    roundId: responseRounds.data.data.filter((round: any) => round.roundNumber === tab)[0].id,
+                    userId: user?.id
+                }})
+                setUserVote(userVoteInThisRound.data.data)
+            }
+                
             setLoading(false)
         }
-    }, [pollId, tab, user?.id])
+    }, [pollId, tab, user?.id, userVote])
 
     return (
         <>
@@ -125,7 +133,7 @@ export default function Poll({ open, close, users, pollId } : PollProps) {
                                 }
                             }}>
                             {
-                                rounds?.map((round, key) => {
+                                rounds?.map((_, key) => {
                                     return (
                                             <Tab value={key} key={key} label={`Rodada ${key+1}`} {...a11yProps(0)} />
                                     )
@@ -138,7 +146,7 @@ export default function Poll({ open, close, users, pollId } : PollProps) {
                             venues.map((item: any, key: number) => {
                                 return (
                                     <div key={key}>
-                                        <Card onClick={() => handleSelectPlace(item)} sx={{ color:'white', minWidth: 275, bgcolor: !userVote ? '#252a34' : userVote.venuesOnVote.filter((venue: any) => venue.venueId === item.id).length > 0 ? "#5cb85c" : "#e23636", mt:2, boxShadow:'16'}}>
+                                        <Card onClick={() => handleSelectPlace(item)} sx={{ cursor: !userVote && 'pointer', color:'white', minWidth: 275, bgcolor: !userVote ? '#252a34' : userVote.venuesOnVote.filter((venue: any) => venue.venueId === item.id).length > 0 ? "#5cb85c" : "#e23636", mt:2, boxShadow:'16'}}>
                                             <CardContent sx={{ display: "flex", alignItems: 'center', gap: '8px' }}>
                                                 <Box>
                                                     <Typography component={'span'}  className="flex gap-2 text-base lg:text-lg font-bold">
@@ -170,31 +178,33 @@ export default function Poll({ open, close, users, pollId } : PollProps) {
                                 )
                             })
                         }
-                        <Typography variant="h6" sx={{mt: '16px'}}  className="text-center text-slate-400">
-                            {
-                                !userVote
-                                ?
-                                `Escolha ${venues.length === 2 ? '1 lugar' : Math.ceil(venues.length)/2 + 1 + 'lugares'} para votar` 
-                                :
-                                `Agora é só esperar os outros participantes votarem :)` 
-                            }                
-                        </Typography>
                         
-                        {
-                            !successModalIsOpen
-                            &&
-                            !userVote
-                            &&
-                            <button className={`${!(!userVote && selectedItems.length === (venues.length === 2 ? 1 : Math.ceil(venues.length)/2 + 1))  && 'cursor-not-allowed'} 
-                                p-2 text-xl lg:text-2xl rounded bg-[#fe235a] mt-2 font-bold text-[#252a34] w-full`} 
-                                onClick={() => handleNewVote()} disabled={!(!userVote &&
-                                selectedItems.length === (venues.length === 2 ? 1 : Math.ceil(venues.length)/2 + 1))}
-                                    >
-                                    Votar
-                            </button>
-                        }
+                        
                         <BaseModal variant="informative" open={successModalIsOpen} close={() => setSuccessModalIsOpen(false)}>Voto registrado com sucesso.</BaseModal>
                         </CustomTabPanel>
+
+                        {
+                            !userVote
+                            &&
+                            <>
+                                <Typography variant="h6" sx={{mt: '16px'}}  className="text-center text-slate-400">
+                                    {
+                                        !userVote
+                                        ?
+                                        `Escolha ${venues.length === 2 ? '1 lugar' : venues.length % 2 === 0 ? (venues.length/2) + 1 : Math.ceil(venues.length/2) + ' lugares'} para votar` 
+                                        :
+                                        `Agora é só esperar os outros participantes votarem :)` 
+                                    }                
+                                </Typography>
+                                <button className={`${!(!userVote && selectedItems.length === (venues.length === 2 ? 1 : Math.ceil(venues.length)/2 + 1))  && 'cursor-not-allowed'} 
+                                    p-2 text-xl lg:text-2xl rounded bg-[#fe235a] mt-2 font-bold text-[#252a34] w-full`} 
+                                    onClick={() => handleNewVote()} disabled={!(!userVote &&
+                                    selectedItems.length === (venues.length === 2 ? 1 : Math.ceil(venues.length)/2 + 1))}
+                                        >
+                                        Votar
+                                </button>
+                            </>
+                        }
                     </BaseModal>
         }
         </>

@@ -10,10 +10,10 @@ const config: Config = {
   theme: {
     extend: {
       screens: {
+        ...defaultTheme.screens,
         'xxs': { 'raw': '(min-height: 660px)' },
         'xs': { 'raw': '(min-height: 850px)' },
         's': { 'raw': '(min-height: 1025px)' },
-        ...defaultTheme.screens,
       },
       fontFamily: {
         'espana': ['var(--font-espana)'],

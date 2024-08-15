@@ -4,13 +4,14 @@ import { NewPoll } from "@/components/common/Modal/NewPoll";
 import Nav from "@/components/common/nav";
 import WelcomeSection from "@/components/WelcomeSection";
 import { UserContext } from "@/contexts/AuthContext";
+import { PollContext } from "@/contexts/PollsContext";
 import { PollDTO } from "@/dao/PollDTO";
 import { UserDTO } from "@/dao/UserDTO";
 import axios from "axios";
 import { useContext, useEffect, useState } from "react";
 
 export default function Dashboard() {
-    const [polls, setPolls] = useState<PollDTO[]>([])
+    const { polls, setPolls } = useContext(PollContext)
     const [newPollModalOpen, setNewPollModalOpen] = useState(false)
     const { user, decodeJwt } = useContext(UserContext)
     const [loading, setLoading] = useState(false)
@@ -28,7 +29,11 @@ export default function Dashboard() {
             setPolls(data.data)
             setLoading(false)
         }
-    }, [user])
+    }, [user, setNewPollModalOpen, setPolls])
+
+    const handleNewPoll = (newPoll: PollDTO) => {
+        setPolls([...polls, newPoll])
+    }
       
     return (
         <>
@@ -43,7 +48,7 @@ export default function Dashboard() {
                     <h1 className="mt-2 text-xl lg:text-3xl">Suas votações recentes</h1>
                     <button className="lg:text-xl bg-[#fe235a] text-[#252a34] font-bold p-1 lg:py-2 lg:px-3 rounded-xl" onClick={() => setNewPollModalOpen(true)}>Nova votação</button>
                 </section>
-                    <section className={`${polls.length > 0 && 'grid grid-cols-2 lg:grid-cols-3'} gap-2 lg:gap-4 mt-6 lg:max-h-[55vh] h-full max-h-[70vh] ${polls.length > 12 && 'overflow-y-scroll scrollbar-thumb-rounded-full scrollbar-track-rounded-full scrollbar scrollbar-thumb-slate-700 scrollbar-track-slate-300'}`}>
+                    <section className={`${polls.length > 0 && 'grid grid-cols-2 lg:grid-cols-3'} auto-rows-[max-content] gap-2 lg:gap-4 mt-6 lg:max-h-[100vh] h-full max-h-[70vh] lg:overflow-auto ${polls.length > 2 && 'overflow-y-scroll scrollbar-thumb-rounded-full scrollbar-track-rounded-full scrollbar scrollbar-thumb-slate-700 scrollbar-track-slate-300'}`}>
                         {
                             polls.length > 0
                             ?
@@ -60,7 +65,7 @@ export default function Dashboard() {
                     </section>
             </section>
             <Nav uri={'dashboard'}/>
-            <NewPoll open={newPollModalOpen} close={() => setNewPollModalOpen(false)}/>
+            <NewPoll handleNewPoll={handleNewPoll} open={newPollModalOpen} close={() => setNewPollModalOpen(false)}/>
         </div>
         }
         </>

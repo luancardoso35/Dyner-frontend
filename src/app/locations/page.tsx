@@ -12,8 +12,9 @@ export default function Locations() {
     const [searchQuery, setSearchQuery] = useState('')
     const [coordinates, setCoordinates] = useState({lat: null, lng: null})
     const [searchAddress, setSearchAddress] = useState('')
-    const [venues, setVenues] = useState([])
-    const [searched, setSearched] = useState(false)
+    const [venues, setVenues] = useState<any>([])
+    const [venueSearched, setVenueSearched] = useState(false)
+    const [locationSearched, setLocationSearched] = useState(false)
     const [offset, setOffset] = useState(0)
     const [loading, setLoading] = useState(false)
     const [locations, setLocations] = useState([])
@@ -23,12 +24,13 @@ export default function Locations() {
     function reset() {
         setLocations([]);
         setVenues([]);
-        setSearched(false)
+        setVenueSearched(false)
+        setLocationSearched(false)
     }
 
     async function searchVenues(lat:number, lng:number) {
         setLoading(true)
-        setSearched(true)
+        setVenueSearched(true)
         try {
             const response = await axios.get('http://localhost:3030/venues', { params: {
                             lat,
@@ -39,7 +41,16 @@ export default function Locations() {
                             'Authorization': 'Bearer ' + parseCookies()['dyner_auth_token']
                         }}, )
             if (response.status === 200) {
-                setVenues(response.data.data.response.venues)
+                const venuesToSet: any[] = []
+
+                for (const venue of response.data.data.response.venues) {
+                    const venueCategories = venue.categories.map((category: any) => category.categoryCode)
+                    if (venueCategories.some((category: number) => category.toString().match('^13[0-9]{3,}$'))) {
+                        venuesToSet.push(venue)
+                    }
+                }
+
+                setVenues(venuesToSet)
             } else {
             }
         } catch (error) {
@@ -52,7 +63,16 @@ export default function Locations() {
                 'Authorization': 'Bearer ' + parseCookies()['dyner_auth_token']
             }})
             if (response.status === 200) {
-                setVenues(response.data.data.response.venues)
+                const venuesToSet: any[] = []
+
+                for (const venue of response.data.data.response.venues) {
+                    const venueCategories = venue.categories.map((category: any) => category.categoryCode)
+                    if (venueCategories.some((category: number) => category.toString().match('^13[0-9]{3,}$'))) {
+                        venuesToSet.push(venue)
+                    }
+                }
+
+                setVenues(venuesToSet)
             } else {
             }
         }
@@ -62,7 +82,7 @@ export default function Locations() {
 
     async function searchVenue() {
         setLoading(true)
-        setSearched(true)
+        setVenueSearched(true)
         try {
             const response = await axios.get('http://localhost:3030/venue', { params: {
                 lat: coordinates.lat,
@@ -72,8 +92,19 @@ export default function Locations() {
                 'Authorization': 'Bearer ' + parseCookies()['dyner_auth_token']
             }})
             if (response.status === 200) {
-                setVenues(response.data.data.response.groups[0].items)
-            } else {
+                const venues = response.data.data.response.groups[0].items.map((item:any) => item.object).filter((item:any) => item.id)
+                if (venues.length > 0 ) {
+                    const venuesToSet: any[] = []
+                    for (const venue of venues) {
+                        const venueCategories = venue.categories.map((category: any) => category.categoryCode)
+                        if (venueCategories.some((category: number) => category.toString().match('^13[0-9]{3,}$'))) {
+                            venuesToSet.push(venue)
+                        }
+                    }
+                    setVenues(venuesToSet)
+                } else {
+                    setVenues([])
+                }
             }
         } catch (error) {
             const response = await axios.get('http://192.168.1.20:3030/venue', { params: {
@@ -84,7 +115,19 @@ export default function Locations() {
                 'Authorization': 'Bearer ' + parseCookies()['dyner_auth_token']
             }})
             if (response.status === 200) {
-                setVenues(response.data.data.response.groups[0].items)
+                const venues = response.data.data.response.groups[0].items.map((item:any) => item.object).filter((item:any) => item.id)
+                if (venues.length > 0 ) {
+                    const venuesToSet: any[] = []
+                    for (const venue of venues) {
+                        const venueCategories = venue.categories.map((category: any) => category.categoryCode)
+                        if (venueCategories.some((category: number) => category.toString().match('^13[0-9]{3,}$'))) {
+                            venuesToSet.push(venue)
+                        }
+                    }
+                    setVenues(venuesToSet)
+                } else {
+                    setVenues([])
+                }
             } else {
             }
         }
@@ -94,7 +137,7 @@ export default function Locations() {
     useEffect(() => {
         async function searchLocations() {
             setLoading(true)
-            setSearched(true)
+            setLocationSearched(true)
             const response = await axios.get('https://api.opencagedata.com/geocode/v1/json', {
                 params: { key: process.env.GEOCODING_API_KEY, q: searchAddress},
             })
@@ -123,10 +166,10 @@ export default function Locations() {
                     <div className="flex justify-between items-center">
                         <div className="flex items-center gap-2 lg:gap-4">
                             <h1 className="mt-2 text-xl lg:text-3xl">Locais</h1>
-                            {searched && <button onClick={reset} className="lg:text-base text-xs	 border-2 border-slate-400 rounded-xl p-2 shadow-md shadow-slate-500/25">Nova Pesquisa</button>}
+                            {locationSearched && <button onClick={reset} className="lg:text-base text-xs	 border-2 border-slate-400 rounded-xl p-2 shadow-md shadow-slate-500/25">Nova Pesquisa</button>}
                         </div>
                         {
-                            searched && !loading && venues.length > 0
+                            locationSearched && venueSearched && !loading
                             &&
                             <div className="flex items-center gap-4">
                                 <input onChange={(event) => setSearchQuery(event.target.value)} className="rounded-xl p-2 bg-slate-700 font-bold w-32 xl:w-80" placeholder="Pesquisar.." type="text" name="" id="" />
@@ -140,11 +183,13 @@ export default function Locations() {
                             ?
                             <Image className="w-24 h-24" src={require('../../../public/images/common/spinner.svg')} alt="spinner"/>
                             :
-                            venues.length > 0
+                            venueSearched
                             ?
-                            <section className="grid grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-4 ">
+                            <section className={`${venueSearched && venues.length === 0 ? '' : 'grid grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-4'}`}>
                                 {
-                                    venues.map((venue: any, key) => {
+                                    venues.length > 0 
+                                    ?
+                                    venues.map((venue: any, key: number) => {
                                         let address = ''
                                         if (venue["object"] !== undefined) {
                                             if (venue.object['location'] !== undefined) {
@@ -169,21 +214,23 @@ export default function Locations() {
                                             <div key={key} className="border-2 border-slate-400 rounded-lg p-2 lg:p-4 shadow-lg shadow-slate-500/50">
                                                 <div className="flex gap-2">
                                                     <h1 className="max-w-[70%]">{venue.name}</h1>
-                                                    <Link target="_blank" href={`https://www.google.com/maps/search/?api=1&query=${venue.name + ' ' + venue.location.address ? venue.location.address + ', ' + venue.location.city + ', ' + venue.location.state : venue.location.formattedAddress.join(', ')}`}><Image className="max-w-[24px] max-h-[24px]" src={require('../../../public/images/common/googleMapsLogo.webp')} alt="Google maps logo"/></Link>
+                                                    <Link target="_blank" href={`https://www.google.com/maps/search/?api=1&query=${venue.name + ' ' + (venue.location.address ? venue.location.address + ', ' + venue.location.city + ', ' + venue.location.state : venue.location.formattedAddress?.join(', '))}`}><Image className="max-w-[24px] max-h-[24px]" src={require('../../../public/images/common/googleMapsLogo.webp')} alt="Google maps logo"/></Link>
                                                 </div>
-                                                <p className="mt-1 lg:mt-2 text-slate-400">{venue.location.address ? venue.location.address + ', ' + venue.location.city + ', ' + venue.location.state : venue.location.formattedAddress.filter((addressLine:string) => !/\d+/.test(addressLine)).join(', ')}</p>
+                                                <p className="mt-1 lg:mt-2 text-slate-400">{ venue.location.address ? venue.location.address + ', ' + venue.location.city + ', ' + venue.location.state : venue.location.formattedAddress?.filter((addressLine:string) => !/\d+/.test(addressLine)).join(', ')}</p>
                                             </div>
                                         )
                                     })
+                                    :
+                                    <p className="text-center text-3xl mt-64 lg:mt-0 text-slate-400">Nenhum local encontrado. Tente buscar novamente</p>
                                 }
                             </section>
                             :
                             locations.length === 0
                             ?
                             <div className="w-full h-full flex flex-col justify-center items-center gap-6">
-                                <p className="text-center text-3xl text-slate-400">{searched ? 'Ops... Não encontramos nenhum local :(' : 'Comece digitando seu endereço na barra de pesquisa.'}</p>
+                                <p className="text-center text-3xl text-slate-400">{locationSearched ? 'Ops... Não encontramos nenhum local :(' : 'Comece digitando seu endereço na barra de pesquisa.'}</p>
                                     {
-                                        searched &&
+                                        locationSearched &&
                                         <p className="text-center text-3xl text-slate-400">{'Tente buscar novamente'}</p>
                                     }
                                 {
@@ -200,7 +247,7 @@ export default function Locations() {
                             <div className="flex items-center justify-center flex-col">
                                 <p className="text-center text-xl lg:text-3xl text-slate-400 mb-4">Escolha um local, ou pesquise outro.</p>
                                 <input onChange={(event) => setSearchAddress(event.target.value)} placeholder="Pesquisar.." className="rounded-xl px-3 py-2 lg:p-3 bg-slate-700 text-xl w-[80vw] xl:w-[30vw]" type="text" name="" id="" />
-                                <ul className={`${locations.length>7 ? 'overflow-y-scroll' : 'overflow-y-hidden'}flex flex-col gap-3 xxs:max-h-[40svh] lg:max-h-[15svh] mt-5 w-[80vw] xl:w-[40vw]`}>
+                                <ul className={`${locations.length > 7 ? 'overflow-y-scroll' : 'overflow-y-hidden'} flex flex-col gap-3 xxs:max-h-[40svh] lg:max-h-[15svh] mt-5 w-[80vw] xl:w-[40vw]`}>
                                 {
                                     locations.map((location: any, key) => {
                                         return (

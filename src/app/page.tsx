@@ -33,9 +33,7 @@ export default function LandingPage() {
       }
     }
 
-  },[handleChangeUser, router, token])
-
-  
+  },[handleChangeUser, router, token, userLoaded])
 
   return (
     <div className='flex overflow-hidden'>

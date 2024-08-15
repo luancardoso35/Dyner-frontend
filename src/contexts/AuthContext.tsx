@@ -1,7 +1,8 @@
 'use client'
-import { createContext, Dispatch, SetStateAction, useCallback, useContext, useState } from "react";
-import { parseCookies } from "nookies";
+import { createContext, useState } from "react";
+import { destroyCookie, parseCookies } from "nookies";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 
 interface User {
     id: string,
@@ -17,9 +18,9 @@ interface User {
 interface AuthContextValues {
     user: User | null,
     handleChangeUser: (userId: string) => void,
-    user_jwt: string,
     decodeJwt: () => void,
     updateUserWithNewFriend: (user: User) => void,
+    handleLogout: () => void,
 }
 
 const jose = require("jose");
@@ -27,20 +28,23 @@ const jose = require("jose");
 const UserContext = createContext<AuthContextValues>({} as AuthContextValues)
 
 function AuthContextProvider({children} : {children: React.ReactNode}) {
+    const router = useRouter()
     const [userHasChanged, setUserHasChanged] = useState(false)
     const [user, setUser] = useState<User | null>(null);
-    const user_jwt = parseCookies()['dyner_auth_token']
 
     const decodeJwt = () => {
-        jose.jwtVerify(user_jwt, new TextEncoder().encode(process.env.SECRET))
-        .then(({payload}: any) => {
-            handleChangeUser(payload.userId)
-        })
+        const user_jwt = parseCookies()['dyner_auth_token']
+        if (user_jwt) {
+            jose.jwtVerify(user_jwt, new TextEncoder().encode(process.env.SECRET))
+            .then(({payload}: any) => {
+                handleChangeUser(payload.userId)
+            })
+        }
     }
 
     const handleChangeUser = async(userId: string) => {
         if (!userHasChanged) {
-            const { data } = await axios.get('http://localhost:3030/user/get-by-id', { params: {
+        const { data } = await axios.get('http://localhost:3030/user/get-by-id', { params: {
                 userId
             }})
             setUser(data.data);
@@ -48,12 +52,19 @@ function AuthContextProvider({children} : {children: React.ReactNode}) {
         }
     }
 
+    const handleLogout = () => {
+        router.push('/sign-in')
+        setUserHasChanged(false)
+        setUser(null)
+        destroyCookie(null, 'dyner_auth_token')
+    }
+
     const updateUserWithNewFriend = (user: User) => {
         setUser(user);
     }
 
     return (
-        <UserContext.Provider value={{user, handleChangeUser, user_jwt, decodeJwt, updateUserWithNewFriend }}>
+        <UserContext.Provider value={{ user, handleChangeUser, decodeJwt, updateUserWithNewFriend, handleLogout }}>
             {children}
         </UserContext.Provider>
     )
