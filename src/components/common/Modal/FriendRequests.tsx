@@ -33,10 +33,10 @@ export default function FriendRequest ({ open, close, loggedUserId }: FriendRequ
 
         async function queryFriendRequests() {
             try {
-                const {data} = await axios.get('http://localhost:3030/request/', { params: {
+                const {data} = await axios.get(`${process.env.BASE_URL}/request/`, { params: {
                     userId: loggedUserId
                 }})
-                const response = await axios.get('http://localhost:3030/user/get-by-ids', { params: {
+                const response = await axios.get(`${process.env.BASE_URL}/user/get-by-ids`, { params: {
                     ids: data.data
                 }})
                 setFriendsRequests(response.data.data)
@@ -55,14 +55,14 @@ export default function FriendRequest ({ open, close, loggedUserId }: FriendRequ
     }
 
     async function handleRequest(userId: string, accepted: boolean) {
-        const {data} = await axios.post('http://localhost:3030/request/handle-request-change', {
+        const {data} = await axios.post(`${process.env.BASE_URL}/request/handle-request-change`, {
             receiverId: loggedUserId,
             senderId: userId,
             accepted
         })
 
         if (data.success && accepted) {
-            const response = await axios.post('http://localhost:3030/user/add-friend', {                
+            const response = await axios.post(`${process.env.BASE_URL}/user/add-friend`, {                
                 newFriendId: userId,
                 userId: loggedUserId
             })

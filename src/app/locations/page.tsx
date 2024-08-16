@@ -32,7 +32,7 @@ export default function Locations() {
         setLoading(true)
         setVenueSearched(true)
         try {
-            const response = await axios.get('http://localhost:3030/venues', { params: {
+            const response = await axios.get(`${process.env.BASE_URL}/venues`, { params: {
                             lat,
                             lng,
                             offset: 20*offset,
@@ -51,30 +51,9 @@ export default function Locations() {
                 }
 
                 setVenues(venuesToSet)
-            } else {
             }
         } catch (error) {
-            const response = await axios.get('http://192.168.1.20:3030/venues', { params: {
-                lat,
-                lng,
-                offset: 20*offset,
-                ...(searchQuery !== '' && {query: searchQuery}),
-            }, headers: {
-                'Authorization': 'Bearer ' + parseCookies()['dyner_auth_token']
-            }})
-            if (response.status === 200) {
-                const venuesToSet: any[] = []
-
-                for (const venue of response.data.data.response.venues) {
-                    const venueCategories = venue.categories.map((category: any) => category.categoryCode)
-                    if (venueCategories.some((category: number) => category.toString().match('^13[0-9]{3,}$'))) {
-                        venuesToSet.push(venue)
-                    }
-                }
-
-                setVenues(venuesToSet)
-            } else {
-            }
+            console.log(error)
         }
         
         setLoading(false)
@@ -84,7 +63,7 @@ export default function Locations() {
         setLoading(true)
         setVenueSearched(true)
         try {
-            const response = await axios.get('http://localhost:3030/venue', { params: {
+            const response = await axios.get(`${process.env.BASE_URL}/venue`, { params: {
                 lat: coordinates.lat,
                 lng: coordinates.lng,
                 query: searchQuery,
@@ -107,29 +86,7 @@ export default function Locations() {
                 }
             }
         } catch (error) {
-            const response = await axios.get('http://192.168.1.20:3030/venue', { params: {
-                lat: coordinates.lat,
-                lng: coordinates.lng,
-                query: searchQuery,
-            }, headers: {
-                'Authorization': 'Bearer ' + parseCookies()['dyner_auth_token']
-            }})
-            if (response.status === 200) {
-                const venues = response.data.data.response.groups[0].items.map((item:any) => item.object).filter((item:any) => item.id)
-                if (venues.length > 0 ) {
-                    const venuesToSet: any[] = []
-                    for (const venue of venues) {
-                        const venueCategories = venue.categories.map((category: any) => category.categoryCode)
-                        if (venueCategories.some((category: number) => category.toString().match('^13[0-9]{3,}$'))) {
-                            venuesToSet.push(venue)
-                        }
-                    }
-                    setVenues(venuesToSet)
-                } else {
-                    setVenues([])
-                }
-            } else {
-            }
+            console.log(error)
         }
         setLoading(false)
     }

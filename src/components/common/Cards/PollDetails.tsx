@@ -21,7 +21,7 @@ export default function VenueDetails({pollDetails} : PollProps) {
 
     async function refreshWithWinner(): Promise<void> {
         if (!user) return
-        const { data } = await axios.get('http://localhost:3030/poll/', { params: {
+        const { data } = await axios.get(`${process.env.BASE_URL}/poll/`, { params: {
             id: user?.id
         }})
         setPolls(data.data)
@@ -33,7 +33,7 @@ export default function VenueDetails({pollDetails} : PollProps) {
         }
 
         async function fetchWinnerVenueName() {
-            const { data } = await axios.get(`http://localhost:3030/venue/${pollDetails.winnerVenueId}`)
+            const { data } = await axios.get(`${process.env.BASE_URL}/venue/${pollDetails.winnerVenueId}`)
             setWinnerVenue(data.data[0])
         }
     }, [pollDetails.closed, pollDetails.winnerVenueId])

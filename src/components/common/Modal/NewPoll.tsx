@@ -43,7 +43,7 @@ export function NewPoll({open, close, handleNewPoll}: NewPollProps) {
 
     async function createPoll() {
         try {
-            const response = await axios.post('http://localhost:3030/poll', {
+            const response = await axios.post(`${process.env.BASE_URL}/poll`, {
                 participants: [...persons, user?.id],
                 venues: selectedVenues
             })
@@ -77,7 +77,7 @@ export function NewPoll({open, close, handleNewPoll}: NewPollProps) {
         setLoading(true)
         setSearched(true)
         try {
-            const response = await axios.get('http://localhost:3030/venue', { params: {
+            const response = await axios.get(`${process.env.BASE_URL}/venue`, { params: {
                 lat: coordinates.lat,
                 lng: coordinates.lng,
                 query: searchQuery,
@@ -87,15 +87,7 @@ export function NewPoll({open, close, handleNewPoll}: NewPollProps) {
             } else {
             }
         } catch (error) {
-            const response = await axios.get('http://192.168.1.20:3030/venue', { params: {
-                lat: coordinates.lat,
-                lng: coordinates.lng,
-                query: searchQuery,
-            }})
-            if (response.status === 200) {
-                setVenues(response.data.data.response.groups[0].items)
-            } else {
-            }
+            console.log(error)
         }
         setLoading(false)
     }

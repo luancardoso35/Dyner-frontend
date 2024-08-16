@@ -44,7 +44,7 @@ function AuthContextProvider({children} : {children: React.ReactNode}) {
 
     const handleChangeUser = async(userId: string) => {
         if (!userHasChanged) {
-        const { data } = await axios.get('http://localhost:3030/user/get-by-id', { params: {
+        const { data } = await axios.get(`${process.env.BASE_URL}/user/get-by-id`, { params: {
                 userId
             }})
             setUser(data.data);

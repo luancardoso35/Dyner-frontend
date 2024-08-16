@@ -23,7 +23,7 @@ export default function Dashboard() {
 
         async function fetchPolls() {
             if (!user) return
-            const { data } = await axios.get('http://localhost:3030/poll/', { params: {
+            const { data } = await axios.get(`${process.env.BASE_URL}/poll/`, { params: {
                 id: user?.id
             }})
             setPolls(data.data)

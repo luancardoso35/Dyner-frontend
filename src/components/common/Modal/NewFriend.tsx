@@ -36,7 +36,7 @@ export function NewFriend({open, close}: ModalProps) {
         fetchAllPeopleRequestedIds();
 
         async function fetchAllPeopleRequestedIds() {
-            const {data} = await axios.get('http://localhost:3030/request/get-all-requested', { params: {
+            const {data} = await axios.get(`${process.env.BASE_URL}/request/get-all-requested`, { params: {
                 userId: user?.id
             }})
 
@@ -46,7 +46,7 @@ export function NewFriend({open, close}: ModalProps) {
 
     async function addFriend({id}: {id: string}) {
 
-        const {data} = await axios.post('http://localhost:3030/request/add-friend-request', {
+        const {data} = await axios.post(`${process.env.BASE_URL}/request/add-friend-request`, {
             receiverId: id,
             senderId: user?.id
         })
@@ -60,7 +60,7 @@ export function NewFriend({open, close}: ModalProps) {
         if (event && event.key !== 'Enter') return
         try {
             setLoading(true)
-            const {data} = await axios.get('http://localhost:3030/user/search-friends', { params: {
+            const {data} = await axios.get(`${process.env.BASE_URL}/user/search-friends`, { params: {
                 name: friendUsername,
                 username: user?.name
             }})

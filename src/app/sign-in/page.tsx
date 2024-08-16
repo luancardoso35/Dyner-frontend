@@ -35,7 +35,7 @@ export default function SignInPage() {
 
     async function handleSignIn(data: SignInSchema) {
         try {
-            const response = await axios.post('http://localhost:3030/user/sign-in',  {
+            const response = await axios.post(`${process.env.BASE_URL}/sign-in`,  {
                 email: data.email,
                 password: data.password
             })

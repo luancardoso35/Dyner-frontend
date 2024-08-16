@@ -61,7 +61,7 @@ export default function Poll({ open, close, users, pollId, refreshWithWinner } :
     };
 
     const handleNewVote = async() => {
-        const response = await axios.post('http://localhost:3030/vote/',  {
+        const response = await axios.post(`${process.env.BASE_URL}/vote/`,  {
             places: selectedItems,
             userId: user?.id,
             roundId: rounds[tab].id
@@ -87,13 +87,13 @@ export default function Poll({ open, close, users, pollId, refreshWithWinner } :
         fetchRounds();
 
         async function fetchRounds() {
-            const responseRounds = await axios.get(`http://localhost:3030/poll/${pollId}/rounds`)
+            const responseRounds = await axios.get(`${process.env.BASE_URL}/poll/${pollId}/rounds`)
             setRounds(responseRounds.data.data)
-            const responseVenues = await axios.get(`http://localhost:3030/venue/${responseRounds.data.data.filter((round: any) => round.roundNumber === tab)[0]?.venuesOnPollRound.map((venue:any) => venue.venueId)}`)
+            const responseVenues = await axios.get(`${process.env.BASE_URL}/venue/${responseRounds.data.data.filter((round: any) => round.roundNumber === tab)[0]?.venuesOnPollRound.map((venue:any) => venue.venueId)}`)
             setVenues(responseVenues.data.data)
 
             if (!userVote) {
-                const userVoteInThisRound = await axios.get(`http://localhost:3030/vote/`, { params: {
+                const userVoteInThisRound = await axios.get(`${process.env.BASE_URL}/vote/`, { params: {
                     roundId: responseRounds.data.data.filter((round: any) => round.roundNumber === tab)[0].id,
                     userId: user?.id
                 }})
