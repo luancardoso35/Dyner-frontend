@@ -1,10 +1,11 @@
 import { Box, Fade, Modal } from "@mui/material";
 import Backdrop from '@mui/material/Backdrop';
 import ModalClose from '@mui/joy/ModalClose';
+import { MouseEventHandler } from "react";
 
 export type ModalProps = {
     open: boolean,
-    close?: MouseEventHandler<HTMLButtonElement>,
+    close: () => void,
     children?: React.ReactNode,
     variant?: 'modal' | 'informative'
 }

@@ -225,7 +225,7 @@ export function NewPoll({open, close, handleNewPoll}: NewPollProps) {
                                                                 </div>
                                                                 <p className="text-sm lg:text-base text-slate-400">{address}</p>
                                                             </div>
-                                                            <CheckCircleOutlineRoundedIcon sx={{color: selectedVenues.filter((venue: any) => venue.id === object.id).length > 0 && '#5cb85c'}} />
+                                                            <CheckCircleOutlineRoundedIcon sx={{color: selectedVenues.filter((venue: any) => venue.id === object.id).length > 0 ? '#5cb85c' : '#fff'}} />
                                                         </li>
                                                     )
                                                 })

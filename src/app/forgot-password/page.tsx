@@ -5,6 +5,7 @@ import Error from "@/components/AuthPages/Error"
 import Input from "@/components/AuthPages/Input"
 import { zodResolver } from "@hookform/resolvers/zod"
 import Link from "next/link"
+import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 
@@ -14,7 +15,7 @@ const forgotPasswordSchema = z.object({
 
 type ForgotPasswordSchema = z.infer<typeof forgotPasswordSchema>
 export default function ForgotPasswordPage() {
-    const { register, handleSubmit, formState: {errors}} = useForm<ForgotPasswordSchema>({
+    const { register, handleSubmit, formState: {errors}, clearErrors} = useForm<ForgotPasswordSchema>({
         resolver: zodResolver(forgotPasswordSchema)
     })
 
@@ -33,7 +34,7 @@ export default function ForgotPasswordPage() {
 
                 <div className="sm:max-w-[70%] md:max-w-[70%] lg:max-w-[100%] xl:max-w-[60%] m-auto">
                     <form className="xs:mt-12 xxs:mt-4 s:mt-6 text-left xxs:mb-6 xs:mb-16" onSubmit={handleSubmit(changePassword)}>
-                        <Input register={register} type="text" label="Email" registerName="email" />                    
+                        <Input register={register} type="text" label="Email" registerName="email" setError={() => clearErrors('email')} />                    
                         {
                             errors
                             &&

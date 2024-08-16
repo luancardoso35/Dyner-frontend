@@ -1,6 +1,6 @@
 'use client'
 import Image from "next/image";
-import { espana } from "./layout";
+import { espana } from "../../lib/fonts";
 export default function Custom404() {
     return (
         <div className={`${espana.className} text-white font-espana px-[10vw] s:pt-[20vh] xxs:pt-[15vh] sm:pt-[20vh]`}>

@@ -1,35 +1,8 @@
 'use client'
-import { Josefin_Sans,  } from "next/font/google";
 import "./globals.css";
-import localFont from 'next/font/local'
-import { AuthContextProvider, UserContext } from "@/contexts/AuthContext";
-import { parseCookies } from "nookies";
-import { useContext, useEffect } from "react";
+import { AuthContextProvider } from "@/contexts/AuthContext";
 import { PollContextProvider } from "@/contexts/PollsContext";
-
-export const josefin_sans = Josefin_Sans({ subsets: ["latin"] });
-
-export const espana = localFont({
-  src: [
-    {
-      path: '../../public/fonts/PlaywriteESDeco-ExtraLight.ttf',
-      weight: '200'
-    },
-    {
-      path: '../../public/fonts/PlaywriteESDeco-Light.ttf',
-      weight: '300'
-    },
-    {
-      path: '../../public/fonts/PlaywriteESDeco-Regular.ttf',
-      weight: '400'
-    },
-    {
-      path: '../../public/fonts/PlaywriteESDeco-Thin.ttf',
-      weight: '100'
-    }
-  ],
-  variable: '--font-espana'
-})
+import { josefin_sans } from "../../lib/fonts";
 
 export default function RootLayout({
   children,

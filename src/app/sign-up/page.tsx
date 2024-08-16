@@ -30,7 +30,7 @@ export default function SignUpPage() {
     const [avatarSeed, setAvatarSeed] = useState('')
     const [seePassword, setSeePassword] = useState(false)
     const [seeConfirmPassword, setSeeConfirmPassword] = useState(false)
-    const { register, handleSubmit, formState: {errors}} = useForm<SignUpSchema>({
+    const { register, handleSubmit, formState: {errors}, clearErrors} = useForm<SignUpSchema>({
         resolver: zodResolver(signUpSchema)
     })
 
@@ -50,10 +50,10 @@ export default function SignUpPage() {
                 <div className="sm:max-w-[70%] md:max-w-[70%] lg:max-w-[100%] xl:max-w-[60%] m-auto">
                     <form className="mt-2 lg:mt-8 text-left" onSubmit={handleSubmit(signUp)}>
                         <AvatarPicker setSeed={setAvatarSeed}/>
-                        <Input label='Nome completo' register={register} registerName='name' type='text'/>
-                        <Input register={register} type="text" label="Email" registerName="email" />                    
-                        <Input register={register} type="password" label="Senha" registerName="password" setState={() => setSeePassword(!seePassword)} state={seePassword} password={true}/>
-                        <Input register={register} type="password" label="Confirme sua senha" registerName="confirmPassword" setState={() => setSeeConfirmPassword(!seeConfirmPassword)} state={seeConfirmPassword} password={true}/>
+                        <Input setError={() => clearErrors('name')} label='Nome completo' register={register} registerName='name' type='text'/>
+                        <Input setError={() => clearErrors('email')} register={register} type="text" label="Email" registerName="email" />                    
+                        <Input setError={() => clearErrors('password')} register={register} type="password" label="Senha" registerName="password" setState={() => setSeePassword(!seePassword)} state={seePassword} password={true}/>
+                        <Input setError={() => clearErrors('confirmPassword')} register={register} type="password" label="Confirme sua senha" registerName="confirmPassword" setState={() => setSeeConfirmPassword(!seeConfirmPassword)} state={seeConfirmPassword} password={true}/>
                         {
                             errors
                             &&

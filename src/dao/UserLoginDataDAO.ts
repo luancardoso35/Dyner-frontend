@@ -1,6 +1,4 @@
-interface UserLoginDataDAO {
+export interface UserLoginDataDAO {
     email: string,
     password: string
 }
-
-export { UserLoginDataDAO }

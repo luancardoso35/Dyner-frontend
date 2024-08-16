@@ -123,8 +123,10 @@ export default function Poll({ open, close, users, pollId, refreshWithWinner } :
                     }
                     </p>
                         <Tabs variant="scrollable" scrollButtons="auto" value={tab} onChange={handleChange} 
-                            aria-label="basic tabs example" textColor='#ffffff'
-                            sx={{ mt:2, ".Mui-selected": {
+                            aria-label="basic tabs example"
+                            sx={{ color: '#fff', mt:2, ".MuiTab-textColorPrimary": {
+                                color: '#fff'
+                            }, ".Mui-selected": {
                                 color: "#fe235a",
                             }}}
                             TabIndicatorProps={{
@@ -146,7 +148,7 @@ export default function Poll({ open, close, users, pollId, refreshWithWinner } :
                             venues.map((item: any, key: number) => {
                                 return (
                                     <div key={key}>
-                                        <Card onClick={() => handleSelectPlace(item)} sx={{ cursor: !userVote && 'pointer', color:'white', minWidth: 275, bgcolor: !userVote ? '#252a34' : userVote.venuesOnVote.filter((venue: any) => venue.venueId === item.id).length > 0 ? "#5cb85c" : "#e23636", mt:2, boxShadow:'16'}}>
+                                        <Card onClick={() => handleSelectPlace(item)} sx={{ cursor: !userVote ? 'pointer' : 'none', color:'white', minWidth: 275, bgcolor: !userVote ? '#252a34' : userVote.venuesOnVote.filter((venue: any) => venue.venueId === item.id).length > 0 ? "#5cb85c" : "#e23636", mt:2, boxShadow:'16'}}>
                                             <CardContent sx={{ display: "flex", alignItems: 'center', gap: '8px' }}>
                                                 <Box>
                                                     <Typography component={'span'}  className="flex gap-2 text-base lg:text-lg font-bold">
