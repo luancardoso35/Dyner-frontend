@@ -3,6 +3,7 @@ import "./globals.css";
 import { AuthContextProvider } from "@/contexts/AuthContext";
 import { PollContextProvider } from "@/contexts/PollsContext";
 import { josefin_sans } from "../../lib/fonts";
+import { Suspense } from "react";
 
 export default function RootLayout({
   children,
@@ -20,7 +21,9 @@ export default function RootLayout({
       <body className={` ${josefin_sans.className}`}>
         <AuthContextProvider>
           <PollContextProvider>
-            {children}
+            <Suspense fallback={<>placeholder</>}>
+              {children}
+            </Suspense>
           </PollContextProvider>
         </AuthContextProvider>
       </body>
