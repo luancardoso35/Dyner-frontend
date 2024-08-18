@@ -1,5 +1,10 @@
 # Dyner
 This app allows two or more users to receive a list of restaurants and vote on their preferences. The restaurants that receive mutual votes are suggested to the users for their next dining experience.
+## This repository is only the frontend part. The backend of the application is in another repository.
+
+Live at https://dyner-frontend.vercel.app/
+
+Built with React, Typescript, Tailwind, Dicebear, Zod, Nookies, React Hook Form, and Material UI.
 
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
