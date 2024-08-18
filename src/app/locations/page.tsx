@@ -115,8 +115,12 @@ export default function Locations() {
     return (
         <>
         {
-            user
-            &&
+            !user
+            ?
+            <div className="w-[100vw] h-[100vh] flex justify-center items-center">
+                <Image className="w-24 h-24" src={require('../../../public/images/common/spinner.svg')} alt="spinner"/>
+            </div>
+            :
             <div className="px-8 md:px-16 lg:flex lg:flex-row-reverse lg:justify-around text-white pt-[6svh] pb-[14svh] h-screen flex flex-col overflow-hidden">
                 <WelcomeSection/>
                 <section className="lg:w-8/12 lg:px-32 flex-1 mt-2 lg:mt-0">
