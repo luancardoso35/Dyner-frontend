@@ -35,7 +35,7 @@ export default function Locations() {
             const response = await axios.get(`${process.env.BASE_URL}/venues`, { params: {
                             lat,
                             lng,
-                            offset: 20*offset,
+                            offset: 18*offset,
                             ...(searchQuery !== '' && {query: searchQuery}),
                         }, headers: {
                             'Authorization': 'Bearer ' + parseCookies()['dyner_auth_token']
@@ -142,6 +142,7 @@ export default function Locations() {
                             :
                             venueSearched
                             ?
+                            <>
                             <section className={`${venueSearched && venues.length === 0 ? '' : 'grid grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-4'}`}>
                                 {
                                     venues.length > 0 
@@ -181,6 +182,14 @@ export default function Locations() {
                                     <p className="text-center text-3xl mt-64 lg:mt-0 text-slate-400">Nenhum local encontrado. Tente buscar novamente</p>
                                 }
                             </section>
+                            <div className="flex justify-between items-center text-slate-400 mt-4 ">
+                                {
+                                    offset > 0 &&
+                                    <p onClick={() => {offset > 0 && setOffset((prevValue) => prevValue-1); coordinates.lat !== null && coordinates.lng !== null && searchVenues(coordinates.lat, coordinates.lng)}} className="hover:underline cursor-pointer">&larr; Página anterior</p>
+                                }
+                                <p onClick={() => {setOffset((prevValue) => prevValue+1); coordinates.lat !== null && coordinates.lng !== null && searchVenues(coordinates.lat, coordinates.lng)}}  className="hover:underline cursor-pointer">Próxima página &rarr;</p>
+                            </div>
+                            </>
                             :
                             locations.length === 0
                             ?
