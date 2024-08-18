@@ -97,24 +97,21 @@ export default function Navigation({uri} : NavigationProps) {
                         setValue(newValue);
                     }}
                 >
-                    <Link href={'/dashboard'}>
-                        <BottomNavigationAction 
-                            LinkComponent={Link}
-                            label="Início" icon={<HomeIcon sx={{"& .Mui-selected, .Mui-selected": {color: "#000"}}}/>} 
-                        />
-                    </Link>
-                    <Link href={'/locations'}>
-                        <BottomNavigationAction 
-                            LinkComponent={Link}
-                            label="Locais" icon={<PlaceIcon sx={{"& .Mui-selected, .Mui-selected": {color: "#000"}}}/>} 
-                        />
-                    </Link>
-                    <Link href={'/friends'}>
-                        <BottomNavigationAction 
-                            LinkComponent={Link}
-                            label="Amigos" icon={<GroupIcon sx={{"& .Mui-selected, .Mui-selected": {color: "#000"}}}/>} 
-                        />
-                    </Link>
+                    <BottomNavigationAction 
+                        onClick={() => router.push('/dashboard')}
+                        LinkComponent={Link}
+                        label="Início" icon={<HomeIcon sx={{"& .Mui-selected, .Mui-selected": {color: "#000"}}}/>} 
+                    />
+                    <BottomNavigationAction 
+                        onClick={() => router.push('/locations')}
+                        LinkComponent={Link}
+                        label="Locais" icon={<PlaceIcon sx={{"& .Mui-selected, .Mui-selected": {color: "#000"}}}/>} 
+                    />
+                    <BottomNavigationAction 
+                        onClick={() => router.push('/friends')}
+                        LinkComponent={Link}
+                        label="Amigos" icon={<GroupIcon sx={{"& .Mui-selected, .Mui-selected": {color: "#000"}}}/>} 
+                    />
                     <BottomNavigationAction 
                         LinkComponent={Link}
                         onClick={() => handleLogout()}

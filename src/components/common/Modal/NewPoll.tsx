@@ -125,7 +125,7 @@ export function NewPoll({open, close, handleNewPoll}: NewPollProps) {
                             "&.Mui-focused": {
                             color: "#fe235a"
                             }
-                        }}>Participantes</InputLabel>
+                        }}>Amigos participantes</InputLabel>
                     
                     <Select
                         inputProps={{

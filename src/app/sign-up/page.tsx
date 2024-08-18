@@ -1,6 +1,6 @@
 'use client';
 import { useRouter } from 'next/navigation'
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from "react-hook-form";
@@ -9,6 +9,9 @@ import Input from '@/components/AuthPages/Input';
 import Error from '@/components/AuthPages/Error';
 import Button from '@/components/AuthPages/Button';
 import AvatarPicker from '@/components/AuthPages/AvatarPicker';
+import axios from 'axios';
+import { UserContext } from '@/contexts/AuthContext';
+import { setCookie } from 'nookies';
 
 const signUpSchema = z.object({
     name: z.string().min(1, {message: 'Preencha todos os campos.'}),
@@ -27,15 +30,34 @@ const signUpSchema = z.object({
 type SignUpSchema = z.infer<typeof signUpSchema>
 
 export default function SignUpPage() {
+    const router = useRouter();
     const [avatarSeed, setAvatarSeed] = useState('')
+    const [userError, setUserError] = useState(false)
     const [seePassword, setSeePassword] = useState(false)
     const [seeConfirmPassword, setSeeConfirmPassword] = useState(false)
+    const { handleChangeUser } = useContext(UserContext)
     const { register, handleSubmit, formState: {errors}, clearErrors} = useForm<SignUpSchema>({
         resolver: zodResolver(signUpSchema)
     })
 
-    function signUp(data: SignUpSchema) {
-        const signUpData = {...data, avatarSeed}
+    async function signUp(data: SignUpSchema) {
+        try {
+            const response = await axios.post(`${process.env.BASE_URL}/sign-up`,  {
+                ...data, avatarSeed
+            })
+
+            if (response.status === 203) {
+                setCookie(undefined, 'dyner_auth_token', response.data.token, {
+                    maxAge: 60*60*24,
+                })
+                router.push('/dashboard')
+                handleChangeUser(response.data.data.id)
+        }}
+        catch (error: any) {
+            if (error.response.status === 409) {
+                setUserError(true)
+            }
+        }
     }
 
     return (
@@ -50,15 +72,15 @@ export default function SignUpPage() {
                 <div className="sm:max-w-[70%] md:max-w-[70%] lg:max-w-[100%] xl:max-w-[60%] m-auto">
                     <form className="mt-2 lg:mt-8 text-left" onSubmit={handleSubmit(signUp)}>
                         <AvatarPicker setSeed={setAvatarSeed}/>
-                        <Input setError={() => clearErrors('name')} label='Nome completo' register={register} registerName='name' type='text'/>
-                        <Input setError={() => clearErrors('email')} register={register} type="text" label="Email" registerName="email" />                    
-                        <Input setError={() => clearErrors('password')} register={register} type="password" label="Senha" registerName="password" setState={() => setSeePassword(!seePassword)} state={seePassword} password={true}/>
-                        <Input setError={() => clearErrors('confirmPassword')} register={register} type="password" label="Confirme sua senha" registerName="confirmPassword" setState={() => setSeeConfirmPassword(!seeConfirmPassword)} state={seeConfirmPassword} password={true}/>
+                        <Input setError={() => {clearErrors('name'); setUserError(false)}} label='Nome completo' register={register} registerName='name' type='text'/>
+                        <Input setError={() => {clearErrors('email'); setUserError(false)}} register={register} type="text" label="Email" registerName="email" />                    
+                        <Input setError={() => {clearErrors('password'); setUserError(false)}} register={register} type="password" label="Senha" registerName="password" setState={() => setSeePassword(!seePassword)} state={seePassword} password={true}/>
+                        <Input setError={() => {clearErrors('confirmPassword'); setUserError(false)}} register={register} type="password" label="Confirme sua senha" registerName="confirmPassword" setState={() => setSeeConfirmPassword(!seeConfirmPassword)} state={seeConfirmPassword} password={true}/>
                         {
-                            errors
+                            (errors || userError)
                             &&
                             <Error>
-                                {errors.email?.message ?? errors.password?.message ?? errors.name?.message ?? errors.confirmPassword?.message}
+                                {userError ? "Esse usuário já existe." : errors.email?.message ?? errors.password?.message ?? errors.name?.message ?? errors.confirmPassword?.message}
                             </Error>
                         }
                         <Button errors={errors.email?.message || errors.password?.message || errors.name?.message || errors.confirmPassword?.message ? true:false}>Criar conta&ensp;&rarr;</Button>

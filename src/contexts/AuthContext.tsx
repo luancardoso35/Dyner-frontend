@@ -3,6 +3,7 @@ import { createContext, useState } from "react";
 import { destroyCookie, parseCookies } from "nookies";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+const jose = require("jose");
 
 interface User {
     id: string,
@@ -23,8 +24,6 @@ interface AuthContextValues {
     handleLogout: () => void,
 }
 
-const jose = require("jose");
-
 const UserContext = createContext<AuthContextValues>({} as AuthContextValues)
 
 function AuthContextProvider({children} : {children: React.ReactNode}) {
@@ -44,8 +43,8 @@ function AuthContextProvider({children} : {children: React.ReactNode}) {
 
     const handleChangeUser = async(userId: string) => {
         if (!userHasChanged) {
-        const { data } = await axios.get(`${process.env.BASE_URL}/user/get-by-id`, { params: {
-                userId
+        const { data } = await axios.get(`${process.env.BASE_URL}/user/`, { params: {
+                id: userId
             }})
             setUser(data.data);
             setUserHasChanged(true)

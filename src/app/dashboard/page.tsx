@@ -40,7 +40,6 @@ export default function Dashboard() {
         {
             user &&
             !loading &&
-            
         <div className="px-8 md:px-16 lg:flex lg:flex-row-reverse lg:justify-around text-white pt-[6svh] pb-[14svh] h-screen flex flex-col overflow-hidden">
             <WelcomeSection/>
             <section className="lg:w-8/12 lg:px-10 xl:px-32 flex-1">
