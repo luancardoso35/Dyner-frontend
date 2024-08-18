@@ -25,6 +25,7 @@ interface Friend {
 
 export function NewFriend({open, close}: ModalProps) {
     const [friends, setFriends] = useState<Friend[]>([])
+    const [searched, setSearched] = useState(false)
     const { user } = useContext(UserContext)
     const [friendUsername, setFriendUsername] = useState<string>('')
     const [loading, setLoading] = useState<boolean>(false)
@@ -67,6 +68,7 @@ export function NewFriend({open, close}: ModalProps) {
 
             if (data.success) {
                 setFriends(data.data)
+                setSearched(true)
             } else {
                 setError(true)
                 setMessage("Nenhum usuário encontrado.")    
@@ -81,6 +83,7 @@ export function NewFriend({open, close}: ModalProps) {
     function reset() {
         setFriends([]);
         setFriendUsername('')
+        setSearched(false)
     }
 
     return (
@@ -90,7 +93,7 @@ export function NewFriend({open, close}: ModalProps) {
             </p>
 
             <div className="lg:mt-4">
-                <p className="text-lg" >Insira o nome ou nome de usuário</p>
+                <p className="text-lg" >Insira o nome</p>
                 <div className="w-full flex justify-end items-center relative">
                     <input onKeyDown={searchUsers} onChange={(event) => setFriendUsername(event.target.value)} className="rounded p-3 bg-[#252a34] border-gray-500 border-[1px] text-base lg:text-xl w-full mt-1" placeholder="Pesquisar.." type="text" name="" id="" />
                     <Image onClick={() => searchUsers()} alt="search logo" className="w-4 h-4 cursor-pointer invert brightness-0 absolute mr-4" src={require('../../../../public/images/common/lupa.png')}/>
@@ -102,13 +105,14 @@ export function NewFriend({open, close}: ModalProps) {
                 ?
                 <Image className="w-12 h-12 m-auto mt-4" src={require('../../../../public/images/common/spinner.svg')} alt="spinner"/>
                 :
-                <main className="mt-4 overflow-y-scroll max-h-[60svh] m-auto scrollbar-thumb-rounded-full scrollbar-track-rounded-full scrollbar scrollbar-thumb-slate-700 scrollbar-track-slate-300">
+                <main className={`mt-4 ${friends.length > 2 && 'overflow-y-scroll'} max-h-[60svh] m-auto scrollbar-thumb-rounded-full scrollbar-track-rounded-full scrollbar scrollbar-thumb-slate-700 scrollbar-track-slate-300`}>
                 {
                     error
                     ?
                     <p>{message}</p>
                     :
-                    friends.length > 0 &&
+                    friends.length > 0 
+                    ?
                     friends.map((friend) => {
                         const friendAvatar = generateAvatar(friend.avatarSeed)
                         return (
@@ -129,6 +133,10 @@ export function NewFriend({open, close}: ModalProps) {
                             </div>
                         )
                     })
+                    :
+                    searched
+                    &&
+                    <p className="text-center text-2xl text-slate-400">Nenhum usuário encontrado.</p>
                 }
                 </main>
             }
