@@ -193,15 +193,15 @@ export default function Poll({ open, close, users, pollId, refreshWithWinner } :
                                     {
                                         !userVote
                                         ?
-                                        `Escolha ${venues.length === 2 ? '1 lugar' : venues.length % 2 === 0 ? (venues.length/2) + 1 : Math.ceil(venues.length/2) + ' lugares'} para votar` 
+                                        `Escolha ${venues.length === 2 ? '1 lugar' : venues.length % 2 === 0 ? (venues.length/2) + 1 : Math.floor(venues.length/2) + ' lugares'} para votar` 
                                         :
                                         `Agora é só esperar os outros participantes votarem :)` 
                                     }                
                                 </Typography>
-                                <button className={`${!(!userVote && selectedItems.length === (venues.length === 2 ? 1 : Math.ceil(venues.length)/2 + 1))  && 'cursor-not-allowed'} 
+                                <button className={`${!(!userVote && selectedItems.length === (venues.length === 2 ? 1 : Math.floor(venues.length/2) + 1))  && 'cursor-not-allowed'} 
                                     p-2 text-xl lg:text-2xl rounded bg-[#fe235a] mt-2 font-bold text-[#252a34] w-full`} 
                                     onClick={() => handleNewVote()} disabled={!(!userVote &&
-                                    selectedItems.length === (venues.length === 2 ? 1 : Math.ceil(venues.length)/2 + 1))}
+                                    selectedItems.length === (venues.length === 2 ? 1 : Math.floor(venues.length/2) + 1))}
                                         >
                                         Votar
                                 </button>
