@@ -7,7 +7,7 @@ import { UserContext } from "@/contexts/AuthContext";
 import { PollContext } from "@/contexts/PollsContext";
 import { PollDTO } from "@/dao/PollDTO";
 import axios from "axios";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useMemo, useState } from "react";
 import Image from "next/image";
 
 export default function Dashboard() {
@@ -17,22 +17,18 @@ export default function Dashboard() {
     const [loading, setLoading] = useState(false)
     decodeJwt();
 
-    useEffect(() => {
-        setLoading(true)
-        fetchPolls()
-
-        async function fetchPolls() {
-            if (!user) return
-            const { data } = await axios.get(`${process.env.BASE_URL}/poll/`, { params: {
-                id: user?.id
-            }})
-            setPolls(data.data)
-            setLoading(false)
-        }
-    }, [user, setNewPollModalOpen, setPolls])
+    useMemo(async () => {
+        axios.get(`${process.env.BASE_URL}/poll/`, { params: {
+            id: user?.id
+        }}).then((response) => {
+            setPolls(response.data.data)
+        }).catch((_) => {
+            
+        })
+    }, [setPolls, user?.id])
 
     const handleNewPoll = (newPoll: PollDTO) => {
-        setPolls([...polls, newPoll])
+        setPolls([newPoll, ...polls ])
     }
       
     return (

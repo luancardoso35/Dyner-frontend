@@ -193,7 +193,7 @@ export default function Poll({ open, close, users, pollId, refreshWithWinner } :
                                     {
                                         !userVote
                                         ?
-                                        `Escolha ${venues.length === 2 ? '1 lugar' : venues.length % 2 === 0 ? (venues.length/2) + 1 : Math.floor(venues.length/2) + ' lugares'} para votar` 
+                                        `Escolha ${venues.length === 2 ? '1 lugar' : Math.floor(venues.length/2)+1 + ' lugares'} para votar` 
                                         :
                                         `Agora é só esperar os outros participantes votarem :)` 
                                     }                
