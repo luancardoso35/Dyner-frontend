@@ -1,5 +1,5 @@
 <p align="center">
-    <h1 align="center">DYNER-FRONTEND</h1>
+    <h1 align="center">DYNER (Frontend)</h1>
 </p>
 <p align="center">
     <em><code>❯ Decide where to go easily </code></em>
