@@ -28,7 +28,6 @@
 #####  Table of Contents
 
 - [ Overview](#-overview)
-- [ Features](#-features)
 - [ Repository Structure](#-repository-structure)
 - [ Getting Started](#-getting-started)
     - [ Prerequisites](#-prerequisites)
@@ -36,8 +35,6 @@
     - [ Usage](#-usage)
     - [ Tests](#-tests)
 - [ Contributing](#-contributing)
-- [ License](#-license)
-- [ Acknowledgments](#-acknowledgments)
 
 ---
 
