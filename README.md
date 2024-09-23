@@ -1,6 +1,6 @@
 # Dyner
 This app allows two or more users to receive a list of restaurants and vote on their preferences. The restaurants that receive mutual votes are suggested to the users for their next dining experience.
-## This repository is only the frontend part. [Backend of the application](https://github.com/luancardoso35/Dyner-backend)
+## This repository is only the frontend part. [Backend repository](https://github.com/luancardoso35/Dyner-backend)
 
 Built with React, Typescript, Tailwind, Dicebear, Zod, Nookies, React Hook Form, and Material UI.
 
